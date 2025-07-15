@@ -2,4 +2,10 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="greenPastel">#DBF9E7</color>
+    <color name="purplePastel">#E8C9FA</color>
+    <color name="pinkPastel">#F79BC5</color>
+    <color name="yellowPastel">#EFE9B7</color>
+    <color name="bluePastel">#B0E1FA</color>
 </resources>
