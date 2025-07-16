@@ -1,7 +1,7 @@
 package com.example.noteapp;
 
 public class Page {
-    private final String id;
+    private String id;
     private String title;
     private String content;
     private String colorFont;
@@ -18,6 +18,9 @@ public class Page {
 
     public Page(String id, String title, String content) {
         this(id, title, content, "#FF000000", "#FFFFFFFF");
+    }
+
+    public Page() {
     }
 
     public String getId(){return id;}
