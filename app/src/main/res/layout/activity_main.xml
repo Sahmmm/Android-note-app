@@ -19,13 +19,18 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <TextView
-        android:id="@+id/tvPages"
+    <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Pages ici"
-        android:padding="16dp"
-        android:textSize="16sp" />
+        android:layout_height="match_parent"
+        android:contentDescription="@string/first_fragment_label">
+
+        <LinearLayout
+            android:id="@+id/componentContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnCreatePage"

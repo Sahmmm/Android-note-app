@@ -23,7 +23,6 @@ public class CreatePageActivity extends AppCompatActivity {
 
     private EditText titleInput, contentInput;
     private Button saveButton;
-    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +32,6 @@ public class CreatePageActivity extends AppCompatActivity {
         titleInput = findViewById(R.id.titleInput);
         contentInput = findViewById(R.id.contentInput);
         saveButton = findViewById(R.id.saveButton);
-
-        sharedPreferences = getSharedPreferences("MyPages", MODE_PRIVATE);
 
         saveButton.setOnClickListener(view -> {
             String title = titleInput.getText().toString();
@@ -66,16 +63,7 @@ public class CreatePageActivity extends AppCompatActivity {
                 } catch (IOException e) {
                     e.printStackTrace(); // gestion d'erreur en écriture
                 }
-//                // etape 4 : print
-//                try {
-//                    List<Page> verifyPages = om.readValue(file, new TypeReference<List<Page>>() {});
-//                    System.out.println("Contenu final de pages.json :");
-//                    for (Page p : verifyPages) {
-//                        System.out.println(p.getTitle() + " : " + p.getContent());
-//                    }
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
+
                 setResult(RESULT_OK);
                 finish(); // Retour à la MainActivity
 

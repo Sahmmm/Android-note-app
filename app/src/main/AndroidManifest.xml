@@ -24,6 +24,7 @@
         </activity>
         <activity android:name=".CreatePageActivity" />
         <activity android:name=".ViewPageActivity" />
+        <activity android:name=".ModifyPageActivity" />
     </application>
 
 </manifest>

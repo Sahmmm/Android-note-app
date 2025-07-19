@@ -1,47 +1,31 @@
 package com.example.noteapp;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.view.View;
 
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
-
-import com.example.noteapp.databinding.ActivityMainBinding;
-
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.util.Log;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ListView pageListView;
     private FloatingActionButton btnCreatePage;
-    private ArrayList<Page> pages;
 
-    private TextView tvPages;
+    private ActivityResultLauncher<Intent> createPageLauncher;
+    private ActivityResultLauncher<Intent> modifyPageLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,14 +33,22 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         btnCreatePage = findViewById(R.id.btnCreatePage);
-        tvPages = findViewById(R.id.tvPages);
-        loadPagesFromJson();
 
-        ActivityResultLauncher<Intent> createPageLauncher = registerForActivityResult(
+        refreshPageList();
+
+        createPageLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == RESULT_OK) {
-                        loadPagesFromJson();
+                        refreshPageList();
+                    }
+                }
+        );
+
+        modifyPageLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(), result -> {
+                    if (result.getResultCode() == RESULT_OK) {
+                        refreshPageList();
                     }
                 }
         );
@@ -68,21 +60,47 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void loadPagesFromJson() {
+    private void refreshPageList() {
         File file = new File(getFilesDir(), "pages.json");
+        if (!file.exists()) {
+            Toast.makeText(this, "pages.json introuvable", Toast.LENGTH_LONG).show();
+            return;
+        }
         ObjectMapper om = new ObjectMapper();
+
+        // component de la liste
+        LinearLayout container = findViewById(R.id.componentContainer);
+        container.removeAllViews();
+
         try {
             List<Page> verifyPages = om.readValue(file, new TypeReference<List<Page>>() {});
-
-            StringBuilder display = new StringBuilder();
+            System.out.println("Pages chargées : " + verifyPages.size());
             for (Page p : verifyPages) {
-                display.append("📄 ").append(p.getTitle()).append("\n")
-                        .append("    ").append(p.getContent()).append("\n\n");
+                container.addView(createItem(p));
             }
-            tvPages.setText(display.toString());
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    private PageItemComponent createItem(Page p){
+        PageItemComponent item = new PageItemComponent(this);
+        item.bind(p); // Liaison des données
+
+        item.setOnClickListener(v -> {
+            Page clickedPage = item.getPage();
+
+            Intent intent = new Intent(MainActivity.this, ModifyPageActivity.class);
+            intent.putExtra("page", clickedPage); // Envoie l'objet
+            modifyPageLauncher.launch(intent);
+        });
+
+        item.setOnLongClickListener(v -> {
+            // TODO
+            return false;
+        });
+
+        return item;
+    }
 }

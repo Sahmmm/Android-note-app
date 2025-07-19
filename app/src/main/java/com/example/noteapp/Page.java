@@ -1,11 +1,17 @@
 package com.example.noteapp;
 
-public class Page {
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+public class Page implements Serializable {
     private String id;
     private String title;
     private String content;
     private String colorFont;
     private String colorText;
+    public String date;
 
 
     public Page(String id, String title, String content, String colorFont, String colorText){
@@ -14,6 +20,7 @@ public class Page {
         this.content = content;
         this.colorFont = colorFont;
         this.colorText = colorText;
+        this.date = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
     }
 
     public Page(String id, String title, String content) {
@@ -28,10 +35,13 @@ public class Page {
     public String getContent(){return content;}
     public String getColorFont(){return colorFont;}
     public String getColorText(){return colorText;}
+    public String getDate() {return date;}
 
     public void setTitle(String title){this.title = title;}
     public void setContent(String content){this.content = content;}
     public void setColorFont(String colorFont){this.colorFont = colorFont;}
     public void setColorText(String colorText){this.colorText = colorText;}
+
+    public void setDate(String newDate){this.date = newDate;}
 
 }
