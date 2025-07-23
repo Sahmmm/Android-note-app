@@ -1,11 +1,16 @@
 package com.example.noteapp;
 
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,6 +28,7 @@ public class ModifyPageActivity extends AppCompatActivity {
     private ImageView imageReturnView, imageOptionsView;
     private EditText editTextContent;
     private TextView pageTitleView;
+    private LinearLayout mainLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,12 +39,14 @@ public class ModifyPageActivity extends AppCompatActivity {
         imageOptionsView = findViewById(R.id.imageOptionsView);
         editTextContent = findViewById(R.id.editTextContent);
         pageTitleView = findViewById(R.id.pageTitleView);
+        mainLayout = findViewById(R.id.mainLayout);
 
         Page linkedPage = (Page) getIntent().getSerializableExtra("page");
 
         if ( linkedPage != null){
             pageTitleView.setText(linkedPage.getTitle());
             editTextContent.setText(linkedPage.getContent());
+            mainLayout.setBackgroundColor(Color.parseColor(linkedPage.getColorFont()));
         }
 
         imageReturnView.setOnClickListener(view -> {
@@ -51,6 +59,14 @@ public class ModifyPageActivity extends AppCompatActivity {
             deletePage(linkedPage);
             setResult(RESULT_OK); // ✅ Indique que tout s’est bien passé
             finish();
+        });
+
+        View rootView = findViewById(R.id.constraintLayoutTitle); // met l'ID de ton ConstraintLayout
+
+        ViewCompat.setOnApplyWindowInsetsListener(rootView, (v, insets) -> {
+            int topInset = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
+            v.setPadding(8, topInset, 8, 12); // applique le padding supérieur
+            return insets;
         });
 
     }

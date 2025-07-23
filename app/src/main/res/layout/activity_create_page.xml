@@ -1,31 +1,255 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:background="@drawable/rounded_popup_bg"
+    android:orientation="vertical"
+    android:padding="16dp">
 
-
+    <!-- Header -->
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
         <EditText
             android:id="@+id/titleInput"
+            android:layout_width="296dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
             android:hint="Titre"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:inputType="text"
+            android:maxLength="20"
+            android:padding="8dp" />
 
-        <EditText
-            android:id="@+id/contentInput"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:hint="Contenu" />
-
-        <Button
-            android:id="@+id/saveButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Sauvegarder" />
+        <View
+            android:id="@+id/btnClose"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="32dp"
+            android:background="@drawable/ic_close_cross" />
     </LinearLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- Couleurs -->
+    <TextView
+        android:id="@+id/FontColortextView"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="8dp"
+        android:fontFamily="sans-serif-condensed"
+        android:gravity="center_vertical"
+        android:text="Couleur de fond"
+        android:textSize="16sp" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:overScrollMode="always"
+        android:scrollbars="none"
+        android:contentDescription="ColorPart">
+
+        <LinearLayout
+            android:id="@+id/colorContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginVertical="8dp">
+
+            <FrameLayout
+                android:id="@+id/color1Container"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="6dp">
+
+                <!-- Pastille colorée -->
+                <View
+                    android:id="@+id/color1View"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/circle"
+                    android:backgroundTint="@color/bluePastel"
+                    />
+
+                <!-- Icône de validation (superposée) -->
+                <ImageView
+                    android:id="@+id/checkOverlay1"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/valide"
+                    android:visibility="visible"
+                    android:elevation="5dp"/>
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/color2Container"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="6dp">
+
+                <!-- Pastille colorée -->
+                <View
+                    android:id="@+id/color2View"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/circle"
+                    android:backgroundTint="@color/purplePastel" />
+
+                <!-- Icône de validation (superposée) -->
+                <ImageView
+                    android:id="@+id/checkOverlay2"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/valide"
+                    android:visibility="invisible" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/color3Container"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="6dp">
+
+                <!-- Pastille colorée -->
+                <View
+                    android:id="@+id/color3View"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/circle"
+                    android:backgroundTint="@color/pinkPastel" />
+
+                <!-- Icône de validation (superposée) -->
+                <ImageView
+                    android:id="@+id/checkOverlay3"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/valide"
+                    android:visibility="invisible" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/color4Container"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="6dp">
+
+                <!-- Pastille colorée -->
+                <View
+                    android:id="@+id/color4View"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/circle"
+                    android:backgroundTint="@color/yellowPastel" />
+
+                <!-- Icône de validation (superposée) -->
+                <ImageView
+                    android:id="@+id/checkOverlay4"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/valide"
+                    android:visibility="invisible" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/color5Container"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="6dp">
+
+                <!-- Pastille colorée -->
+                <View
+                    android:id="@+id/color5View"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/circle"
+                    android:backgroundTint="@color/greenPastel" />
+
+                <!-- Icône de validation (superposée) -->
+                <ImageView
+                    android:id="@+id/checkOverlay5"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/valide"
+                    android:visibility="invisible" />
+            </FrameLayout>
+
+            <View
+                android:id="@+id/color6"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="6dp"
+                android:background="@drawable/circle_plus"
+                 />
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <!-- Ligne icône + secret -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="8dp"
+            android:fontFamily="sans-serif-condensed"
+            android:text="icon :"
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/editTextIcon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:hint="📄"
+            android:maxLength="3"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:padding="8dp" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:fontFamily="sans-serif-condensed"
+            android:text="secret :"
+            android:textSize="20sp" />
+
+        <CheckBox
+            android:id="@+id/checkSecret"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:elevation="3dp" />
+    </LinearLayout>
+
+    <!-- Bouton Save -->
+    <ImageButton
+        android:id="@+id/saveButton"
+        android:layout_width="76dp"
+        android:layout_height="54dp"
+        android:layout_gravity="center"
+        android:backgroundTint="@color/bluePastel"
+        android:elevation="3dp"
+        app:srcCompat="@drawable/valide"
+        android:contentDescription="addPage" />
+</LinearLayout>

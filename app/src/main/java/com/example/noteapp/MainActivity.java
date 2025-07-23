@@ -23,8 +23,6 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private FloatingActionButton btnCreatePage;
-
-    private ActivityResultLauncher<Intent> createPageLauncher;
     private ActivityResultLauncher<Intent> modifyPageLauncher;
 
     @Override
@@ -36,15 +34,6 @@ public class MainActivity extends AppCompatActivity {
 
         refreshPageList();
 
-        createPageLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == RESULT_OK) {
-                        refreshPageList();
-                    }
-                }
-        );
-
         modifyPageLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(), result -> {
                     if (result.getResultCode() == RESULT_OK) {
@@ -54,10 +43,11 @@ public class MainActivity extends AppCompatActivity {
         );
 
         btnCreatePage.setOnClickListener(view -> {
-            Intent intent = new Intent(MainActivity.this, CreatePageActivity.class);
-            createPageLauncher.launch(intent);
-
+            // Appelé quand le dialog se ferme après ajout
+            CreatePageDialogFragment dialog = new CreatePageDialogFragment(this::refreshPageList);
+            dialog.show(getSupportFragmentManager(), "CreatePageDialog");
         });
+
     }
 
     private void refreshPageList() {

@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 public class PageItemComponent extends LinearLayout {
     public TextView titleView;
-    public TextView dateView;
+    public TextView dateView, pageIconView;
     private Page pageData;
 
     public PageItemComponent(Context context) {
@@ -30,12 +30,15 @@ public class PageItemComponent extends LinearLayout {
         LayoutInflater.from(context).inflate(R.layout.component_page_item, this, true);
         titleView = findViewById(R.id.pageTitleView);
         dateView = findViewById(R.id.pageDateView);
+        pageIconView = findViewById(R.id.pageIconView);
     }
 
     public void bind(Page page) {
         this.pageData = page;
         titleView.setText(page.getTitle());
         dateView.setText(page.getDate());
+        pageIconView.setText(page.getIcon());
+
     }
 
     public Page getPage() {

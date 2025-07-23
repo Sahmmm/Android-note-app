@@ -3,7 +3,9 @@ package com.example.noteapp;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,8 +23,9 @@ import java.io.File;
 
 public class CreatePageActivity extends AppCompatActivity {
 
-    private EditText titleInput, contentInput;
-    private Button saveButton;
+    private EditText titleInput, editTextIcon;
+    private ImageButton saveButton;
+    private CheckBox checkSecret;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,12 +33,13 @@ public class CreatePageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_page);
 
         titleInput = findViewById(R.id.titleInput);
-        contentInput = findViewById(R.id.contentInput);
+        editTextIcon = findViewById(R.id.editTextIcon);
         saveButton = findViewById(R.id.saveButton);
+        checkSecret = findViewById(R.id.checkSecret);
 
         saveButton.setOnClickListener(view -> {
             String title = titleInput.getText().toString();
-            String content = contentInput.getText().toString();
+            String icon = editTextIcon.getText().toString();
 
             if (!title.isEmpty()) {
 
@@ -54,7 +58,7 @@ public class CreatePageActivity extends AppCompatActivity {
 
                 // Étape 2 : ajouter la nouvelle page
                 String id = UUID.randomUUID().toString(); // ID unique
-                Page newpage = new Page(id, title, content);
+                Page newpage = new Page(id, title, icon, "@color/bluePastel");
                 pages.add(newpage);
 
                 // Étape 3 : réécrire la liste complète
