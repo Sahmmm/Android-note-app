@@ -15,7 +15,7 @@
         android:orientation="horizontal">
 
         <EditText
-            android:id="@+id/titleInput"
+            android:id="@+id/editTitleInput"
             android:layout_width="296dp"
             android:layout_height="48dp"
             android:layout_weight="1"
@@ -183,15 +183,42 @@
                     android:src="@drawable/valide"
                     android:visibility="invisible" />
             </FrameLayout>
-
-            <View
-                android:id="@+id/color6"
+            <FrameLayout
+                android:id="@+id/color6Container"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:layout_gravity="center"
-                android:layout_marginHorizontal="6dp"
-                android:background="@drawable/circle_plus"
-                 />
+                android:layout_marginHorizontal="6dp">
+
+                <View
+                    android:id="@+id/colorAddView"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center"
+                    android:layout_marginHorizontal="6dp"
+                    android:background="@drawable/circle_plus"
+                    />
+
+                <!-- Pastille colorée -->
+                <View
+                    android:id="@+id/color6View"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/circle"
+                    android:visibility="invisible" />
+
+                <!-- Icône de validation (superposée) -->
+                <ImageView
+                    android:id="@+id/checkOverlay6"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/valide"
+                    android:visibility="invisible" />
+
+            </FrameLayout>
+
+
         </LinearLayout>
     </HorizontalScrollView>
 

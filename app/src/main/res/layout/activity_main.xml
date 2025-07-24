@@ -4,28 +4,34 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bluePastel"
+    android:background="@color/backgroundColor"
     android:fitsSystemWindows="true"
     tools:context=".MainActivity">
 
+    <!-- AppBar avec Toolbar -->
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
-        android:background="@color/bluePastel">
+        android:background="@color/backgroundColor"
+        android:theme="@style/ThemeOverlay.Material3.Dark.ActionBar">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize" />
-
+            android:layout_height="?attr/actionBarSize"
+            app:title="Memories of Lilacs"
+            app:titleTextColor="@android:color/black" />
     </com.google.android.material.appbar.AppBarLayout>
 
+    <!-- ScrollView démarre sous la Toolbar -->
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:contentDescription="@string/first_fragment_label">
+        android:fillViewport="true"
+        android:contentDescription="Scroll List for pages"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:id="@+id/componentContainer"
@@ -34,14 +40,13 @@
             android:orientation="vertical" />
     </ScrollView>
 
+    <!-- FAB en bas à droite -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnCreatePage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_marginEnd="@dimen/fab_margin"
-        android:layout_marginBottom="16dp"
-        android:contentDescription="Créer une nouvelle page"
+        android:layout_margin="16dp"
+        android:contentDescription="click"
         app:srcCompat="@android:drawable/ic_input_add" />
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

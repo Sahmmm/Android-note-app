@@ -15,8 +15,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -42,17 +44,17 @@ public class CreatePageDialogFragment extends DialogFragment {
     private EditText titleInput, editTextIcon;
     private CheckBox checkSecret;
     private ImageButton saveButton;
-    private View btnClose, color1View, color2View, color3View, color4View, color5View;
-    private ImageView checkOverlay1, checkOverlay2, checkOverlay3, checkOverlay4, checkOverlay5;
+    private View btnClose, color1View, color2View, color3View, color4View, color5View, color6View, colorAddView;
+    private ImageView checkOverlay1, checkOverlay2, checkOverlay3, checkOverlay4, checkOverlay5, checkOverlay6;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_create_page, container, false);
+        View view = inflater.inflate(R.layout.dialog_create_page, container, false);
 
-        titleInput = view.findViewById(R.id.titleInput);
+        titleInput = view.findViewById(R.id.editTitleInput);
         editTextIcon = view.findViewById(R.id.editTextIcon);
         saveButton = view.findViewById(R.id.saveButton);
         checkSecret = view.findViewById(R.id.checkSecret);
@@ -62,15 +64,18 @@ public class CreatePageDialogFragment extends DialogFragment {
         checkOverlay3 = view.findViewById(R.id.checkOverlay3);
         checkOverlay4 = view.findViewById(R.id.checkOverlay4);
         checkOverlay5 = view.findViewById(R.id.checkOverlay5);
+        checkOverlay6 = view.findViewById(R.id.checkOverlay6);
         color1View = view.findViewById(R.id.color1View);
         color2View = view.findViewById(R.id.color2View);
         color3View = view.findViewById(R.id.color3View);
         color4View = view.findViewById(R.id.color4View);
         color5View = view.findViewById(R.id.color5View);
+        color6View = view.findViewById(R.id.color6View);
+        colorAddView = view.findViewById(R.id.colorAddView);
 
-        List<ImageView> checkOverlays = Arrays.asList(checkOverlay1, checkOverlay2, checkOverlay3, checkOverlay4, checkOverlay5);
+        List<ImageView> checkOverlays = Arrays.asList(checkOverlay1, checkOverlay2, checkOverlay3, checkOverlay4, checkOverlay5, checkOverlay6);
 
-        List<View> colorsChecked = Arrays.asList(color1View, color2View, color3View, color4View, color5View);
+        List<View> colorsChecked = Arrays.asList(color1View, color2View, color3View, color4View, color5View, color6View);
         AtomicReference<String> backgroundColor = new AtomicReference<>("#B0E1FA");
 
         for (int i = 0; i < colorsChecked.size(); i++) {
@@ -140,6 +145,27 @@ public class CreatePageDialogFragment extends DialogFragment {
             dismiss();
         });
 
+        colorAddView.setOnClickListener(v -> {
+            AddColorDialogFragment dialog = new AddColorDialogFragment();
+
+            dialog.setOnModifyListener(newColorInput -> {
+                try {
+
+                    int color = Color.parseColor(newColorInput);
+                    color6View.setVisibility(View.VISIBLE);
+                    color6View.setBackgroundTintList(ColorStateList.valueOf(color));
+
+                    // ✅ Désactiver le clic (si plus modifiable après)
+                    colorAddView.setVisibility(View.GONE);
+                    colorAddView.setClickable(false);
+
+                } catch (IllegalArgumentException e) {
+                    Toast.makeText(requireContext(), "Couleur invalide", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            dialog.show(requireActivity().getSupportFragmentManager(), "AddNewColor");
+        });
         return view;
     }
 

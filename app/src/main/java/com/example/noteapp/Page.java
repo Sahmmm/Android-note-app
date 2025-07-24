@@ -12,7 +12,8 @@ public class Page implements Serializable {
     private String icon;
     private String colorFont;
     private String colorText;
-    public String date;
+    private String time;
+    private String date;
 
 
     public Page(String id, String title, String content, String icon, String colorFont, String colorText){
@@ -22,6 +23,7 @@ public class Page implements Serializable {
         this.icon = icon;
         this.colorFont = colorFont;
         this.colorText = colorText;
+        this.time = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
         this.date = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
     }
 
@@ -41,6 +43,7 @@ public class Page implements Serializable {
     public String getIcon(){return icon;}
     public String getColorFont(){return colorFont;}
     public String getColorText(){return colorText;}
+    public String getTime(){return time;}
     public String getDate() {return date;}
 
     public void setTitle(String title){this.title = title;}
@@ -48,6 +51,7 @@ public class Page implements Serializable {
     public void setIcon(String icon){this.icon=icon;}
     public void setColorFont(String colorFont){this.colorFont = colorFont;}
     public void setColorText(String colorText){this.colorText = colorText;}
+    public void setTime(String newTime){this.time = newTime;}
     public void setDate(String newDate){this.date = newDate;}
 
 }

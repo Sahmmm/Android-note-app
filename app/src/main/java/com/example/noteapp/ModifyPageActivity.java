@@ -1,12 +1,17 @@
 package com.example.noteapp;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
@@ -55,10 +60,50 @@ public class ModifyPageActivity extends AppCompatActivity {
             finish();
         });
 
-        imageOptionsView.setOnClickListener(view -> {
-            deletePage(linkedPage);
-            setResult(RESULT_OK); // ✅ Indique que tout s’est bien passé
-            finish();
+        imageOptionsView.setOnClickListener(v -> {
+            PopupMenu popupMenu = new PopupMenu(this, v);
+            popupMenu.getMenuInflater().inflate(R.menu.topbar_menu_page, popupMenu.getMenu());
+
+            popupMenu.setOnMenuItemClickListener(item -> {
+                int id = item.getItemId();
+
+                if (id == R.id.menu_edit) {
+                    ModifyPageDialogFragment dialog = new ModifyPageDialogFragment();
+
+                    Bundle args = new Bundle();
+                    assert linkedPage != null;
+                    args.putString("color", linkedPage.getColorFont()); // ex: "#FF00FF"
+                    dialog.setArguments(args);
+
+                    dialog.setOnModifyListener((newTitle, newIcon, isSecret) -> {
+                        pageTitleView.setText(newTitle);
+                        linkedPage.setTitle(newTitle);
+                        linkedPage.setIcon(newIcon);
+                        //linkedPage.setSecret(isSecret);
+                        saveChange(linkedPage);
+                    });
+                    dialog.show(getSupportFragmentManager(), "ModifyPageDialog");
+                    return true;
+                } else if (id == R.id.menu_delete) {
+                    deletePage(linkedPage);
+                    setResult(RESULT_OK); // ✅ Indique que tout s’est bien passé
+                    finish();
+                    return true;
+                } else if (id == R.id.menu_copy) {
+                    String textToCopy = editTextContent.getText().toString();
+
+                    // Copie dans le presse-papier
+                    ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipData clip = ClipData.newPlainText("copied_text", textToCopy);
+                    clipboard.setPrimaryClip(clip);
+
+                    return true;
+                }
+
+                return false;
+            });
+
+            popupMenu.show();
         });
 
         View rootView = findViewById(R.id.constraintLayoutTitle); // met l'ID de ton ConstraintLayout
@@ -89,8 +134,15 @@ public class ModifyPageActivity extends AppCompatActivity {
                 // only if content get changed
                 if(!verifyPages.get(i).getContent().equals(editTextContent.getText().toString().trim())){
                     verifyPages.get(i).setDate(new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date()));
+                    verifyPages.get(i).setTime(new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date()));
                 }
                 verifyPages.get(i).setContent(editTextContent.getText().toString().trim());
+                // To manage the change made
+                verifyPages.get(i).setTitle(page.getTitle());
+                if(!page.getIcon().isEmpty()) {
+                    verifyPages.get(i).setIcon(page.getIcon());
+                }
+
                 break;
             }
         }

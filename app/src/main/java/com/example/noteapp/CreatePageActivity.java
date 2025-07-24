@@ -1,8 +1,6 @@
 package com.example.noteapp;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -10,7 +8,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -30,9 +27,9 @@ public class CreatePageActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_page);
+        setContentView(R.layout.dialog_create_page);
 
-        titleInput = findViewById(R.id.titleInput);
+        titleInput = findViewById(R.id.editTitleInput);
         editTextIcon = findViewById(R.id.editTextIcon);
         saveButton = findViewById(R.id.saveButton);
         checkSecret = findViewById(R.id.checkSecret);
