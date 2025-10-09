@@ -1,43 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/backgroundColor"
+    android:background="@color/bgColor"
     android:fitsSystemWindows="true"
     tools:context=".MainActivity">
 
-    <!-- AppBar avec Toolbar -->
+    <!-- AppBarLayout enveloppant ton layout custom -->
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
-        android:background="@color/backgroundColor"
-        android:theme="@style/ThemeOverlay.Material3.Dark.ActionBar">
+        android:background="@color/bgColor">
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
+        <!-- Ta "toolbar" custom -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/mainAppBarLayout"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:title="Memories of Lilacs"
-            app:titleTextColor="@android:color/black" />
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:background="@drawable/bg_page_item"
+            android:backgroundTint="@color/bgColorBis"
+            android:fitsSystemWindows="false">
+
+            <!-- Conteneur horizontal -->
+            <LinearLayout
+                android:id="@+id/appBarContent"
+                android:layout_width="0dp"
+                android:layout_height="?attr/actionBarSize"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <!-- Icône hamburger -->
+                <ImageView
+                    android:id="@+id/menuIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="18dp"
+                    android:src="@drawable/ic_menu_hamburger"
+                    android:contentDescription="Menu icon" />
+
+                <!-- Titre -->
+                <TextView
+                    android:id="@+id/toolbarTitle"
+                    android:layout_width="282dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="sans-serif-light"
+
+                    android:gravity="center_vertical"
+                    android:paddingStart="8dp"
+                    android:text="Memories of Lilas"
+                    android:textColor="@color/textColor"
+                    android:textSize="24sp" />
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- ScrollView démarre sous la Toolbar -->
+    <!-- ScrollView qui démarre sous la barre grâce au comportement -->
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
-        android:contentDescription="Scroll List for pages"
+        android:clipToPadding="false"
+        android:contentDescription="srollview des pages"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:id="@+id/componentContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" />
+            android:orientation="vertical"
+            android:padding="8dp"/>
     </ScrollView>
 
     <!-- FAB en bas à droite -->
@@ -48,5 +90,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:contentDescription="click"
+        app:tint="@color/textColorBis"
+        android:backgroundTint="@color/bgColorBis"
         app:srcCompat="@android:drawable/ic_input_add" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

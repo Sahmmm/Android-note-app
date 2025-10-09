@@ -14,9 +14,10 @@ public class Page implements Serializable {
     private String colorText;
     private String time;
     private String date;
+    public boolean isSecret;
 
 
-    public Page(String id, String title, String content, String icon, String colorFont, String colorText){
+    public Page(String id, String title, String content, String icon, String colorFont, String colorText, boolean isSecret){
         this.id = id;
         this.title = title;
         this.content = content;
@@ -25,10 +26,11 @@ public class Page implements Serializable {
         this.colorText = colorText;
         this.time = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
         this.date = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
+        this.isSecret = isSecret;
     }
 
-    public Page(String id, String title, String icon, String colorFont) {
-        this(id, title, "", icon, colorFont, "#FFFFFFFF");
+    public Page(String id, String title, String icon, String colorFont, boolean isSecret) {
+        this(id, title, "", icon, colorFont, "#FFFFFFFF", isSecret);
         if(icon.isEmpty()){
             setIcon("\uD83D\uDCC4");
         }
@@ -45,6 +47,7 @@ public class Page implements Serializable {
     public String getColorText(){return colorText;}
     public String getTime(){return time;}
     public String getDate() {return date;}
+
 
     public void setTitle(String title){this.title = title;}
     public void setContent(String content){this.content = content;}

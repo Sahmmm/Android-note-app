@@ -3,8 +3,11 @@ package com.example.noteapp;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.ViewOutlineProvider;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -48,7 +51,16 @@ public class PageItemComponent extends LinearLayout {
         pageIconView.setText(page.getIcon());
 
         int color = Color.parseColor(page.getColorFont());
-        pageContainer.setBackgroundTintList(ColorStateList.valueOf(color));
+//        pageContainer.setBackgroundTintList(ColorStateList.valueOf(color));
+
+
+        Drawable background = pageContainer.getBackground().mutate();
+
+        if (background instanceof GradientDrawable) {
+            GradientDrawable drawable = (GradientDrawable) background;
+            drawable.setColor(color); // Fond
+
+        }
 
 
 

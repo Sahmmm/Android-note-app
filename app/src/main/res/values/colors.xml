@@ -8,6 +8,18 @@
     <color name="pinkPastel">#F79BC5</color>
     <color name="yellowPastel">#EFE9B7</color>
     <color name="bluePastel">#B0E1FA</color>
-    <color name="backgroundColor">#EDFFFF</color>
-    <color name="backgroundDarkColor">#002E2E</color>
+
+    <color name="textColor">#262626</color>
+    <color name="textColorBis">#1A1A1A</color>
+
+    <color name="textDarkColor">#E0E0E0</color>
+    <color name="textDarkColorBis">#CCCCCC</color>
+
+    <color name="bgColor">#FFF2FF</color>
+    <color name="bgColorBis">#FFD9FF</color>
+
+    <color name="bgDarkColor">#171717</color>
+    <color name="bgDarkColorBis">#262626</color>
+
+    <color name="page_border_color">#15000000</color>
 </resources>

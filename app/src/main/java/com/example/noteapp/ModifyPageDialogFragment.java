@@ -25,7 +25,7 @@ public class ModifyPageDialogFragment extends DialogFragment {
     private View btnClose;
 
     public interface OnModifyListener {
-        void onModify(String title, String icon, boolean isSecret);
+        void onModify(String title, String icon);
     }
 
     public void setOnModifyListener(OnModifyListener listener) {
@@ -41,7 +41,6 @@ public class ModifyPageDialogFragment extends DialogFragment {
 
         editTitleInput = view.findViewById(R.id.editTitleInput);
         editTextIcon = view.findViewById(R.id.editTextIcon);
-        checkSecret = view.findViewById(R.id.checkSecret);
         saveButton = view.findViewById(R.id.saveButton);
         btnClose = view.findViewById(R.id.btnClose);
 
@@ -62,8 +61,7 @@ public class ModifyPageDialogFragment extends DialogFragment {
                     if (listener != null) {
                         listener.onModify(
                                 editTitleInput.getText().toString(),
-                                editTextIcon.getText().toString(),
-                                checkSecret.isChecked()
+                                editTextIcon.getText().toString()
                         );
                     }
                     dialog.dismiss(); // fermer le popup après sauvegarde

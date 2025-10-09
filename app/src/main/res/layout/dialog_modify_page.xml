@@ -20,8 +20,9 @@
             android:layout_height="48dp"
             android:layout_weight="1"
             android:hint="Titre"
+            android:textColorHint="@color/textColorBis"
             android:inputType="text"
-            android:textColor="@color/black"
+            android:textColor="@color/textColor"
             android:maxLength="20"
             android:padding="8dp" />
 
@@ -33,7 +34,6 @@
             android:background="@drawable/ic_close_cross" />
     </LinearLayout>
 
-    <!-- Ligne icône + secret -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -48,36 +48,21 @@
             android:layout_marginEnd="8dp"
             android:fontFamily="sans-serif-condensed"
             android:text="icon :"
+            android:textColor="@color/textColor"
             android:textSize="20sp" />
 
         <EditText
             android:id="@+id/editTextIcon"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:hint="📄"
-            android:maxLength="3"
             android:gravity="center"
-            android:textSize="20sp"
-            android:padding="8dp" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:fontFamily="sans-serif-condensed"
-            android:text="secret :"
+            android:hint="📄"
+            android:textColor="@color/textColor"
+            android:maxLength="3"
+            android:padding="8dp"
             android:textSize="20sp" />
 
-        <CheckBox
-            android:id="@+id/checkSecret"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:elevation="3dp" />
+
     </LinearLayout>
 
     <!-- Bouton Save -->

@@ -20,6 +20,7 @@
             android:layout_height="48dp"
             android:layout_weight="1"
             android:hint="Titre"
+            android:textColor="@color/textColor"
             android:inputType="text"
             android:maxLength="20"
             android:padding="8dp" />
@@ -41,7 +42,8 @@
         android:fontFamily="sans-serif-condensed"
         android:gravity="center_vertical"
         android:text="Couleur de fond"
-        android:textSize="16sp" />
+        android:textColor="@color/textColor"
+        android:textSize="20sp" />
 
     <HorizontalScrollView
         android:layout_width="match_parent"
@@ -237,6 +239,7 @@
             android:layout_marginEnd="8dp"
             android:fontFamily="sans-serif-condensed"
             android:text="icon :"
+            android:textColor="@color/textColor"
             android:textSize="20sp" />
 
         <EditText
@@ -260,6 +263,7 @@
             android:layout_marginEnd="8dp"
             android:fontFamily="sans-serif-condensed"
             android:text="secret :"
+            android:textColor="@color/textColor"
             android:textSize="20sp" />
 
         <CheckBox

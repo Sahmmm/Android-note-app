@@ -7,7 +7,9 @@
     android:layout_marginHorizontal="12dp"
     android:paddingHorizontal="16dp"
     android:paddingVertical="12dp"
-    android:background="@drawable/bg_page_item">
+    android:background="@drawable/bg_page_item"
+    android:clipToOutline="true"
+    android:outlineProvider="background">
 
     <!-- Icône 📄 -->
     <TextView
@@ -32,9 +34,10 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:text="PageTitle"
-        android:textColor="#8B0000"
-        android:textSize="18sp"
-        android:textStyle="bold"
+        android:fontFamily="sans-serif-light"
+        android:textColor="@color/textColor"
+        android:textSize="22sp"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/pageTimeView"
         app:layout_constraintHorizontal_bias="0.356"

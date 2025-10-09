@@ -24,6 +24,9 @@ public class CreatePageActivity extends AppCompatActivity {
     private ImageButton saveButton;
     private CheckBox checkSecret;
 
+    private String jsonSecret = "pagesSecret.json";
+    private String jsonClassic = "pages.json";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,41 +39,50 @@ public class CreatePageActivity extends AppCompatActivity {
 
         saveButton.setOnClickListener(view -> {
             String title = titleInput.getText().toString();
-            String icon = editTextIcon.getText().toString();
-
             if (!title.isEmpty()) {
-
-                File file = new File(this.getFilesDir(), "pages.json");
-                ObjectMapper om = new ObjectMapper();
-                List<Page> pages = new ArrayList<>();
-
-                // Étape 1 : charger les anciennes pages si le fichier existe
-                if (file.exists()) {
-                    try {
-                        pages = om.readValue(file, new TypeReference<List<Page>>() {});
-                    } catch (IOException e) {
-                        e.printStackTrace(); // gestion d'erreur en lecture
-                    }
+                if(checkSecret.isChecked()) {
+                    createPage(jsonSecret);
+                } else {
+                    createPage(jsonClassic);
                 }
-
-                // Étape 2 : ajouter la nouvelle page
-                String id = UUID.randomUUID().toString(); // ID unique
-                Page newpage = new Page(id, title, icon, "@color/bluePastel");
-                pages.add(newpage);
-
-                // Étape 3 : réécrire la liste complète
-                try {
-                    om.writeValue(file, pages);
-                } catch (IOException e) {
-                    e.printStackTrace(); // gestion d'erreur en écriture
-                }
-
-                setResult(RESULT_OK);
-                finish(); // Retour à la MainActivity
-
             } else {
                 Toast.makeText(this, "Le titre est requis", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+
+    private void createPage(String json){
+        String title = titleInput.getText().toString();
+        String icon = editTextIcon.getText().toString();
+        boolean isSecret = checkSecret.isChecked();
+
+        File file = new File(this.getFilesDir(), json);
+        ObjectMapper om = new ObjectMapper();
+        List<Page> pages = new ArrayList<>();
+
+        // Étape 1 : charger les anciennes pages si le fichier existe
+        if (file.exists()) {
+            try {
+                pages = om.readValue(file, new TypeReference<List<Page>>() {});
+            } catch (IOException e) {
+                e.printStackTrace(); // gestion d'erreur en lecture
+            }
+        }
+
+        // Étape 2 : ajouter la nouvelle page
+        String id = UUID.randomUUID().toString(); // ID unique
+        Page newpage = new Page(id, title, icon, "@color/bluePastel", isSecret);
+        pages.add(newpage);
+
+        // Étape 3 : réécrire la liste complète
+        try {
+            om.writeValue(file, pages);
+        } catch (IOException e) {
+            e.printStackTrace(); // gestion d'erreur en écriture
+        }
+
+        setResult(RESULT_OK);
+        finish(); // Retour à la MainActivity
     }
 }

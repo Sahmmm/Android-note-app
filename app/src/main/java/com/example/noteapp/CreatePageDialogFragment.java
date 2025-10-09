@@ -59,6 +59,7 @@ public class CreatePageDialogFragment extends DialogFragment {
         saveButton = view.findViewById(R.id.saveButton);
         checkSecret = view.findViewById(R.id.checkSecret);
         btnClose = view.findViewById(R.id.btnClose);
+        checkSecret = view.findViewById(R.id.checkSecret);
         checkOverlay1 = view.findViewById(R.id.checkOverlay1);
         checkOverlay2 = view.findViewById(R.id.checkOverlay2);
         checkOverlay3 = view.findViewById(R.id.checkOverlay3);
@@ -108,9 +109,17 @@ public class CreatePageDialogFragment extends DialogFragment {
         saveButton.setOnClickListener(v -> {
             String title = titleInput.getText().toString();
             String icon = editTextIcon.getText().toString();
+            boolean isSecret = checkSecret.isChecked();
+
+            String json;
+            if(isSecret){
+                json = "pagesSecret.json";
+            } else {
+                json = "pages.json";
+            }
 
             if (!title.isEmpty()) {
-                File file = new File(requireContext().getFilesDir(), "pages.json");
+                File file = new File(requireContext().getFilesDir(), json);
                 ObjectMapper om = new ObjectMapper();
                 List<Page> pages = new ArrayList<>();
 
@@ -125,7 +134,8 @@ public class CreatePageDialogFragment extends DialogFragment {
 
                 // Ajouter nouvelle page
                 String id = UUID.randomUUID().toString();
-                Page newPage = new Page(id, title, icon, backgroundColor.get());
+                System.out.println("à la creation : "+isSecret);
+                Page newPage = new Page(id, title, icon, backgroundColor.get(),isSecret);
                 pages.add(newPage);
 
                 try {

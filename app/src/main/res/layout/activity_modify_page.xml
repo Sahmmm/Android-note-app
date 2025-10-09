@@ -25,8 +25,8 @@
             <!-- Image à gauche -->
             <ImageView
                 android:id="@+id/imageReturnView"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:backgroundTint="@color/black"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -36,8 +36,8 @@
             <!-- Image à droite -->
             <ImageView
                 android:id="@+id/imageOptionsView"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -47,12 +47,12 @@
             <TextView
                 android:id="@+id/pageTitleView"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
                 android:gravity="center"
                 android:text="TitleView"
                 android:textAlignment="center"
                 android:textSize="24sp"
-                android:textColor="@color/black"
+                android:textColor="@color/textColor"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/imageOptionsView"
                 app:layout_constraintStart_toEndOf="@id/imageReturnView"
@@ -68,8 +68,8 @@
             android:background="@android:color/transparent"
             android:gravity="top|start"
             android:hint="Écris ici..."
-            android:textColorHint="#DC000000"
-            android:textColor="@color/black"
+            android:textColorHint="#BC000000"
+            android:textColor="@color/textColorBis"
             android:inputType="textMultiLine"
             android:maxLines="1000"
             android:overScrollMode="always"

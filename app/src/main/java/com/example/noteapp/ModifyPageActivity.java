@@ -11,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
@@ -55,6 +54,7 @@ public class ModifyPageActivity extends AppCompatActivity {
         }
 
         imageReturnView.setOnClickListener(view -> {
+            assert linkedPage != null;
             saveChange(linkedPage);
             setResult(RESULT_OK); // ✅ Indique que tout s’est bien passé
             finish();
@@ -75,7 +75,7 @@ public class ModifyPageActivity extends AppCompatActivity {
                     args.putString("color", linkedPage.getColorFont()); // ex: "#FF00FF"
                     dialog.setArguments(args);
 
-                    dialog.setOnModifyListener((newTitle, newIcon, isSecret) -> {
+                    dialog.setOnModifyListener((newTitle, newIcon) -> {
                         pageTitleView.setText(newTitle);
                         linkedPage.setTitle(newTitle);
                         linkedPage.setIcon(newIcon);
@@ -117,7 +117,13 @@ public class ModifyPageActivity extends AppCompatActivity {
     }
 
     private void saveChange(Page page) {
-        File file = new File(getFilesDir(), "pages.json");
+        String json;
+        if(page.isSecret){
+            json = "pagesSecret.json";
+        } else {
+            json = "pages.json";
+        }
+        File file = new File(getFilesDir(), json);
         ObjectMapper om = new ObjectMapper();
         List<Page> verifyPages = new ArrayList<>();
 
@@ -154,7 +160,14 @@ public class ModifyPageActivity extends AppCompatActivity {
     }
     
     private void deletePage(Page page){
-        File file = new File(getFilesDir(), "pages.json");
+
+        String json;
+        if(page.isSecret){
+            json = "pagesSecret.json";
+        } else {
+            json = "pages.json";
+        }
+        File file = new File(getFilesDir(), json);
         ObjectMapper om = new ObjectMapper();
         List<Page> verifyPages = new ArrayList<>();
         try {
