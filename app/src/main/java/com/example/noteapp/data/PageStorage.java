@@ -23,7 +23,11 @@ public class PageStorage {
     private final ObjectMapper objectMapper;
 
     public PageStorage(Context context) {
-        filesDir = context.getFilesDir();
+        this(context.getFilesDir());
+    }
+
+    public PageStorage(File filesDir) {
+        this.filesDir = filesDir;
         objectMapper = new ObjectMapper();
     }
 

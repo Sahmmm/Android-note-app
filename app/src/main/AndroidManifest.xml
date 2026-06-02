@@ -22,8 +22,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.create.CreatePageActivity" />
-        <activity android:name=".ui.editor.ViewPageActivity" />
         <activity android:name=".ui.editor.ModifyPageActivity" />
         <activity android:name=".ui.main.SecretMainActivity" />
     </application>
