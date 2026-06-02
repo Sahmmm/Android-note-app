@@ -4,8 +4,6 @@ import android.content.ClipData;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -24,9 +22,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MenuDialogFragment.OnMenuActionSelectedListener {
@@ -37,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements MenuDialogFragmen
     private TextView toolbarTitle, emptyStateTitle, emptyStateSubtitle, trashDropZone;
     private EditText searchInput;
     private LinearLayout emptyStateContainer;
+    private PageRepository pageRepository;
     private int clickSecretCount;
     private String currentTypeFilter = Page.TYPE_NOTE;
     private String searchQuery = "";
@@ -55,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements MenuDialogFragmen
         emptyStateTitle = findViewById(R.id.emptyStateTitle);
         emptyStateSubtitle = findViewById(R.id.emptyStateSubtitle);
         trashDropZone = findViewById(R.id.trashDropZone);
+        pageRepository = new PageRepository(this);
 
 
         refreshPageList();
@@ -125,28 +122,14 @@ public class MainActivity extends AppCompatActivity implements MenuDialogFragmen
         container.removeAllViews();
         int visibleItems = 0;
 
-        File file = new File(getFilesDir(), "pages.json");
-        if (!file.exists()) {
-            updateEmptyState(visibleItems);
-            return;
-        }
-        ObjectMapper om = new ObjectMapper();
-
-        try {
-            List<Page> verifyPages = om.readValue(file, new TypeReference<List<Page>>() {});
-            System.out.println("Pages chargées : " + verifyPages.size());
-            for (Page p : verifyPages) {
-                if (matchesCurrentFilter(p)) {
-                    container.addView(createItem(p));
-                    visibleItems++;
-                }
+        List<Page> pages = pageRepository.loadPublicPages();
+        for (Page p : pages) {
+            if (matchesCurrentFilter(p)) {
+                container.addView(createItem(p));
+                visibleItems++;
             }
-            updateEmptyState(visibleItems);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            updateEmptyState(visibleItems);
         }
+        updateEmptyState(visibleItems);
     }
 
     private PageItemComponent createItem(Page p){
@@ -288,30 +271,6 @@ public class MainActivity extends AppCompatActivity implements MenuDialogFragmen
     }
 
     private void deletePage(Page page) {
-        File file = new File(getFilesDir(), "pages.json");
-        if (!file.exists()) {
-            return;
-        }
-
-        ObjectMapper om = new ObjectMapper();
-        List<Page> pages = new ArrayList<>();
-        try {
-            pages = om.readValue(file, new TypeReference<List<Page>>() {});
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        for (int i = 0; i < pages.size(); i++) {
-            if (pages.get(i).getId().equals(page.getId())) {
-                pages.remove(i);
-                break;
-            }
-        }
-
-        try {
-            om.writeValue(file, pages);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        pageRepository.deletePage(page);
     }
 }

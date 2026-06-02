@@ -17,21 +17,13 @@ import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.io.File;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class CreatePageDialogFragment extends DialogFragment {
@@ -54,6 +46,7 @@ public class CreatePageDialogFragment extends DialogFragment {
     private ImageButton saveButton;
     private LinearLayout reminderFields;
     private RadioGroup typeRadioGroup;
+    private PageTypeFormHelper pageTypeFormHelper;
     private View btnClose, color1View, color2View, color3View, color4View, color5View, color6View, colorAddView;
     private ImageView checkOverlay1, checkOverlay2, checkOverlay3, checkOverlay4, checkOverlay5, checkOverlay6;
 
@@ -93,12 +86,8 @@ public class CreatePageDialogFragment extends DialogFragment {
         List<View> colorsChecked = Arrays.asList(color1View, color2View, color3View, color4View, color5View, color6View);
         AtomicReference<String> backgroundColor = new AtomicReference<>("#B0E1FA");
 
-        setSelectedType(defaultType);
-        reminderFields.setVisibility(Page.TYPE_REMINDER.equals(defaultType) ? View.VISIBLE : View.GONE);
-        typeRadioGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            String selectedType = getSelectedType(checkedId);
-            reminderFields.setVisibility(Page.TYPE_REMINDER.equals(selectedType) ? View.VISIBLE : View.GONE);
-        });
+        pageTypeFormHelper = new PageTypeFormHelper(typeRadioGroup, reminderFields);
+        pageTypeFormHelper.bind(defaultType);
 
         for (int i = 0; i < colorsChecked.size(); i++) {
             final int index = i; // capture correcte
@@ -131,41 +120,14 @@ public class CreatePageDialogFragment extends DialogFragment {
             String title = titleInput.getText().toString();
             String icon = editTextIcon.getText().toString();
             boolean isSecret = checkSecret.isChecked();
-            String selectedType = getSelectedType(typeRadioGroup.getCheckedRadioButtonId());
+            String selectedType = pageTypeFormHelper.getSelectedType();
             String reminderDate = reminderDateInput.getText().toString();
             String reminderTime = reminderTimeInput.getText().toString();
 
-            String json;
-            if(isSecret){
-                json = "pagesSecret.json";
-            } else {
-                json = "pages.json";
-            }
-
             if (!title.isEmpty()) {
-                File file = new File(requireContext().getFilesDir(), json);
-                ObjectMapper om = new ObjectMapper();
-                List<Page> pages = new ArrayList<>();
-
-                // Lire les pages existantes
-                if (file.exists()) {
-                    try {
-                        pages = om.readValue(file, new TypeReference<List<Page>>() {});
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                // Ajouter nouvelle page
                 String id = UUID.randomUUID().toString();
                 Page newPage = new Page(id, title, icon, backgroundColor.get(), isSecret, selectedType, reminderDate, reminderTime);
-                pages.add(newPage);
-
-                try {
-                    om.writeValue(file, pages);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                new PageRepository(requireContext()).addPage(newPage);
 
                 if (listener != null) listener.onPageCreated();
                 dismiss(); // Fermer la popup
@@ -201,27 +163,6 @@ public class CreatePageDialogFragment extends DialogFragment {
         });
         return view;
     }
-
-    private String getSelectedType(int checkedId) {
-        if (checkedId == R.id.typeReminder) {
-            return Page.TYPE_REMINDER;
-        }
-        if (checkedId == R.id.typeList) {
-            return Page.TYPE_LIST;
-        }
-        return Page.TYPE_NOTE;
-    }
-
-    private void setSelectedType(String type) {
-        if (Page.TYPE_REMINDER.equals(type)) {
-            typeRadioGroup.check(R.id.typeReminder);
-        } else if (Page.TYPE_LIST.equals(type)) {
-            typeRadioGroup.check(R.id.typeList);
-        } else {
-            typeRadioGroup.check(R.id.typeNote);
-        }
-    }
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

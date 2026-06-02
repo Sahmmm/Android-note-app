@@ -19,15 +19,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 public class ModifyPageActivity extends AppCompatActivity {
@@ -36,6 +29,7 @@ public class ModifyPageActivity extends AppCompatActivity {
     private EditText editTextContent, newListItemInput;
     private TextView pageTitleView, pageMetaView, addListItemButton;
     private LinearLayout mainLayout, listEditorLayout, listItemsContainer;
+    private PageRepository pageRepository;
     private float touchStartX, touchStartY;
 
     @Override
@@ -53,6 +47,7 @@ public class ModifyPageActivity extends AppCompatActivity {
         mainLayout = findViewById(R.id.mainLayout);
         listEditorLayout = findViewById(R.id.listEditorLayout);
         listItemsContainer = findViewById(R.id.listItemsContainer);
+        pageRepository = new PageRepository(this);
 
         Page linkedPage = (Page) getIntent().getSerializableExtra("page");
 
@@ -136,81 +131,18 @@ public class ModifyPageActivity extends AppCompatActivity {
     }
 
     private void saveChange(Page page) {
-        String json;
-        if(page.isSecret){
-            json = "pagesSecret.json";
-        } else {
-            json = "pages.json";
+        String currentContent = getCurrentContent(page);
+        Page storedPage = pageRepository.findPageById(page);
+        if (storedPage == null || !storedPage.getContent().equals(currentContent)) {
+            page.setDate(new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date()));
+            page.setTime(new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date()));
         }
-        File file = new File(getFilesDir(), json);
-        ObjectMapper om = new ObjectMapper();
-        List<Page> verifyPages = new ArrayList<>();
-
-        try {
-            verifyPages = om.readValue(file, new TypeReference<List<Page>>() {
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String currentPageID = page.getId();
-        for (int i = 0; i < verifyPages.size(); i++){
-
-            if (verifyPages.get(i).getId().equals(currentPageID)) {
-                String currentContent = getCurrentContent(page);
-                if(!verifyPages.get(i).getContent().equals(currentContent)){
-                    verifyPages.get(i).setDate(new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date()));
-                    verifyPages.get(i).setTime(new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date()));
-                }
-                verifyPages.get(i).setContent(currentContent);
-                page.setContent(currentContent);
-                // To manage the change made
-                verifyPages.get(i).setTitle(page.getTitle());
-                verifyPages.get(i).setType(page.getType());
-                verifyPages.get(i).setReminderDate(page.getReminderDate());
-                verifyPages.get(i).setReminderTime(page.getReminderTime());
-                if(!page.getIcon().isEmpty()) {
-                    verifyPages.get(i).setIcon(page.getIcon());
-                }
-
-                break;
-            }
-        }
-        try {
-            om.writeValue(file, verifyPages);
-        } catch (IOException e) {
-            e.printStackTrace(); // gestion d'erreur en écriture
-        }
+        page.setContent(currentContent);
+        pageRepository.updatePage(page);
     }
     
     private void deletePage(Page page){
-
-        String json;
-        if(page.isSecret){
-            json = "pagesSecret.json";
-        } else {
-            json = "pages.json";
-        }
-        File file = new File(getFilesDir(), json);
-        ObjectMapper om = new ObjectMapper();
-        List<Page> verifyPages = new ArrayList<>();
-        try {
-            verifyPages = om.readValue(file, new TypeReference<List<Page>>() {
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String currentPageID = page.getId();
-        for (int i = 0; i < verifyPages.size(); i++){               // suppression de la page
-            if (verifyPages.get(i).getId().equals(currentPageID)) {
-                verifyPages.remove(i);
-                break;
-            }
-        }
-        try {
-            om.writeValue(file, verifyPages);
-        } catch (IOException e) {
-            e.printStackTrace(); // gestion d'erreur en écriture
-        }
+        pageRepository.deletePage(page);
     }
 
     private void bindPageType(Page page) {

@@ -22,8 +22,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CreatePageActivity" />
-        <activity android:name=".ViewPageActivity" />
         <activity android:name=".ModifyPageActivity" />
         <activity android:name=".SecretMainActivity" />
         <activity android:name=".SettingsActivity" />

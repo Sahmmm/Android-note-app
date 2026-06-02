@@ -24,6 +24,7 @@ public class ModifyPageDialogFragment extends DialogFragment {
     private ImageButton saveButton;
     private LinearLayout reminderFields;
     private RadioGroup typeRadioGroup;
+    private PageTypeFormHelper pageTypeFormHelper;
     private View btnClose;
 
     public interface OnModifyListener {
@@ -61,11 +62,8 @@ public class ModifyPageDialogFragment extends DialogFragment {
         editTextIcon.setText(pageIcon);
         reminderDateInput.setText(reminderDate);
         reminderTimeInput.setText(reminderTime);
-        setSelectedType(pageType);
-        reminderFields.setVisibility(Page.TYPE_REMINDER.equals(pageType) ? View.VISIBLE : View.GONE);
-        typeRadioGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            reminderFields.setVisibility(Page.TYPE_REMINDER.equals(getSelectedType(checkedId)) ? View.VISIBLE : View.GONE);
-        });
+        pageTypeFormHelper = new PageTypeFormHelper(typeRadioGroup, reminderFields);
+        pageTypeFormHelper.bind(pageType);
 
         int parsedColor = Color.parseColor(pageColor);
         saveButton.setBackgroundTintList(ColorStateList.valueOf(parsedColor));
@@ -83,7 +81,7 @@ public class ModifyPageDialogFragment extends DialogFragment {
                         listener.onModify(
                                 editTitleInput.getText().toString(),
                                 editTextIcon.getText().toString(),
-                                getSelectedType(typeRadioGroup.getCheckedRadioButtonId()),
+                                pageTypeFormHelper.getSelectedType(),
                                 reminderDateInput.getText().toString(),
                                 reminderTimeInput.getText().toString()
                         );
@@ -98,23 +96,4 @@ public class ModifyPageDialogFragment extends DialogFragment {
         return dialog;
     }
 
-    private String getSelectedType(int checkedId) {
-        if (checkedId == R.id.typeReminder) {
-            return Page.TYPE_REMINDER;
-        }
-        if (checkedId == R.id.typeList) {
-            return Page.TYPE_LIST;
-        }
-        return Page.TYPE_NOTE;
-    }
-
-    private void setSelectedType(String type) {
-        if (Page.TYPE_REMINDER.equals(type)) {
-            typeRadioGroup.check(R.id.typeReminder);
-        } else if (Page.TYPE_LIST.equals(type)) {
-            typeRadioGroup.check(R.id.typeList);
-        } else {
-            typeRadioGroup.check(R.id.typeNote);
-        }
-    }
 }
