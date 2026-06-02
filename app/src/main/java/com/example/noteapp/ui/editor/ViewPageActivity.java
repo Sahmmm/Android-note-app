@@ -1,10 +1,12 @@
-package com.example.noteapp;
+package com.example.noteapp.ui.editor;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.noteapp.R;
 
 public class ViewPageActivity extends AppCompatActivity {
 

@@ -1,4 +1,4 @@
-package com.example.noteapp;
+package com.example.noteapp.ui.editor;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -16,16 +16,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.noteapp.R;
+import com.example.noteapp.data.PageStorage;
+import com.example.noteapp.model.Page;
 
-import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
 
 public class ModifyPageActivity extends AppCompatActivity {
 
@@ -33,6 +28,7 @@ public class ModifyPageActivity extends AppCompatActivity {
     private EditText editTextContent;
     private TextView pageTitleView;
     private LinearLayout mainLayout;
+    private PageStorage pageStorage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,10 +40,11 @@ public class ModifyPageActivity extends AppCompatActivity {
         editTextContent = findViewById(R.id.editTextContent);
         pageTitleView = findViewById(R.id.pageTitleView);
         mainLayout = findViewById(R.id.mainLayout);
+        pageStorage = new PageStorage(this);
 
         Page linkedPage = (Page) getIntent().getSerializableExtra("page");
 
-        if ( linkedPage != null){
+        if (linkedPage != null) {
             pageTitleView.setText(linkedPage.getTitle());
             editTextContent.setText(linkedPage.getContent());
             mainLayout.setBackgroundColor(Color.parseColor(linkedPage.getColorFont()));
@@ -56,7 +53,7 @@ public class ModifyPageActivity extends AppCompatActivity {
         imageReturnView.setOnClickListener(view -> {
             assert linkedPage != null;
             saveChange(linkedPage);
-            setResult(RESULT_OK); // ✅ Indique que tout s’est bien passé
+            setResult(RESULT_OK);
             finish();
         });
 
@@ -72,27 +69,25 @@ public class ModifyPageActivity extends AppCompatActivity {
 
                     Bundle args = new Bundle();
                     assert linkedPage != null;
-                    args.putString("color", linkedPage.getColorFont()); // ex: "#FF00FF"
+                    args.putString("color", linkedPage.getColorFont());
                     dialog.setArguments(args);
 
                     dialog.setOnModifyListener((newTitle, newIcon) -> {
                         pageTitleView.setText(newTitle);
                         linkedPage.setTitle(newTitle);
                         linkedPage.setIcon(newIcon);
-                        //linkedPage.setSecret(isSecret);
                         saveChange(linkedPage);
                     });
                     dialog.show(getSupportFragmentManager(), "ModifyPageDialog");
                     return true;
                 } else if (id == R.id.menu_delete) {
                     deletePage(linkedPage);
-                    setResult(RESULT_OK); // ✅ Indique que tout s’est bien passé
+                    setResult(RESULT_OK);
                     finish();
                     return true;
                 } else if (id == R.id.menu_copy) {
                     String textToCopy = editTextContent.getText().toString();
 
-                    // Copie dans le presse-papier
                     ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                     ClipData clip = ClipData.newPlainText("copied_text", textToCopy);
                     clipboard.setPrimaryClip(clip);
@@ -106,87 +101,28 @@ public class ModifyPageActivity extends AppCompatActivity {
             popupMenu.show();
         });
 
-        View rootView = findViewById(R.id.constraintLayoutTitle); // met l'ID de ton ConstraintLayout
+        View rootView = findViewById(R.id.constraintLayoutTitle);
 
         ViewCompat.setOnApplyWindowInsetsListener(rootView, (v, insets) -> {
             int topInset = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
-            v.setPadding(8, topInset, 8, 12); // applique le padding supérieur
+            v.setPadding(8, topInset, 8, 12);
             return insets;
         });
-
     }
 
     private void saveChange(Page page) {
-        String json;
-        if(page.isSecret){
-            json = "pagesSecret.json";
-        } else {
-            json = "pages.json";
-        }
-        File file = new File(getFilesDir(), json);
-        ObjectMapper om = new ObjectMapper();
-        List<Page> verifyPages = new ArrayList<>();
-
         try {
-            verifyPages = om.readValue(file, new TypeReference<List<Page>>() {
-            });
+            pageStorage.updatePage(page, editTextContent.getText().toString().trim());
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        String currentPageID = page.getId();
-        for (int i = 0; i < verifyPages.size(); i++){
-
-            if (verifyPages.get(i).getId().equals(currentPageID)) {
-                // only if content get changed
-                if(!verifyPages.get(i).getContent().equals(editTextContent.getText().toString().trim())){
-                    verifyPages.get(i).setDate(new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date()));
-                    verifyPages.get(i).setTime(new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date()));
-                }
-                verifyPages.get(i).setContent(editTextContent.getText().toString().trim());
-                // To manage the change made
-                verifyPages.get(i).setTitle(page.getTitle());
-                if(!page.getIcon().isEmpty()) {
-                    verifyPages.get(i).setIcon(page.getIcon());
-                }
-
-                break;
-            }
-        }
-        try {
-            om.writeValue(file, verifyPages);
-        } catch (IOException e) {
-            e.printStackTrace(); // gestion d'erreur en écriture
         }
     }
-    
-    private void deletePage(Page page){
 
-        String json;
-        if(page.isSecret){
-            json = "pagesSecret.json";
-        } else {
-            json = "pages.json";
-        }
-        File file = new File(getFilesDir(), json);
-        ObjectMapper om = new ObjectMapper();
-        List<Page> verifyPages = new ArrayList<>();
+    private void deletePage(Page page) {
         try {
-            verifyPages = om.readValue(file, new TypeReference<List<Page>>() {
-            });
+            pageStorage.deletePage(page);
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        String currentPageID = page.getId();
-        for (int i = 0; i < verifyPages.size(); i++){               // suppression de la page
-            if (verifyPages.get(i).getId().equals(currentPageID)) {
-                verifyPages.remove(i);
-                break;
-            }
-        }
-        try {
-            om.writeValue(file, verifyPages);
-        } catch (IOException e) {
-            e.printStackTrace(); // gestion d'erreur en écriture
         }
     }
 }

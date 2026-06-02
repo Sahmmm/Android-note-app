@@ -1,4 +1,4 @@
-package com.example.noteapp;
+package com.example.noteapp.ui.create;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -12,9 +12,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
+import com.example.noteapp.R;
+
 public class AddColorDialogFragment extends DialogFragment {
 
-    private AddColorDialogFragment.OnModifyListener listener;
+    private OnModifyListener listener;
 
     private View btnClose;
     private EditText newColorInput;
@@ -24,7 +26,7 @@ public class AddColorDialogFragment extends DialogFragment {
         void onModify(String color);
     }
 
-    public void setOnModifyListener(AddColorDialogFragment.OnModifyListener listener) {
+    public void setOnModifyListener(OnModifyListener listener) {
         this.listener = listener;
     }
 
@@ -39,27 +41,22 @@ public class AddColorDialogFragment extends DialogFragment {
         saveButton = view.findViewById(R.id.saveButton);
         newColorInput = view.findViewById(R.id.newColorInput);
 
-        btnClose.setOnClickListener(v->{dismiss();});
+        btnClose.setOnClickListener(v -> dismiss());
 
         builder.setView(view);
         AlertDialog dialog = builder.create();
-        dialog.setOnShowListener(d -> {
-            saveButton.setOnClickListener(v -> {
+        dialog.setOnShowListener(d -> saveButton.setOnClickListener(v -> {
+            String colorStr = newColorInput.getText().toString().trim();
 
-                String colorStr = newColorInput.getText().toString().trim();
-
-                if (colorStr.matches("^#(?:[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$")) {
-                    if (listener != null) {
-                        listener.onModify(
-                                newColorInput.getText().toString()
-                        );
-                    }
-                    dialog.dismiss(); // fermer le popup après sauvegarde
-                } else{
-                    Toast.makeText(getContext(), "Format de couleur invalide", Toast.LENGTH_SHORT).show();
+            if (colorStr.matches("^#(?:[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$")) {
+                if (listener != null) {
+                    listener.onModify(newColorInput.getText().toString());
                 }
-            });
-        });
+                dialog.dismiss();
+            } else {
+                Toast.makeText(getContext(), "Format de couleur invalide", Toast.LENGTH_SHORT).show();
+            }
+        }));
         return dialog;
     }
 }

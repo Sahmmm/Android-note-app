@@ -1,16 +1,7 @@
-package com.example.noteapp;
+package com.example.noteapp.ui.main;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Handler;
 import android.os.Looper;
 import android.widget.ImageView;
@@ -18,10 +9,20 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.noteapp.R;
+import com.example.noteapp.data.PageStorage;
+import com.example.noteapp.model.Page;
+import com.example.noteapp.ui.common.PageListRenderer;
+import com.example.noteapp.ui.create.CreatePageDialogFragment;
+import com.example.noteapp.ui.editor.ModifyPageActivity;
+import com.example.noteapp.ui.menu.MenuDialogFragment;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.io.IOException;
-import java.util.AbstractCollection;
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -31,17 +32,21 @@ public class MainActivity extends AppCompatActivity {
     private ImageView menuIcon;
     private TextView toolbarTitle;
     private int clickSecretCount;
+    private PageStorage pageStorage;
+    private PageListRenderer pageListRenderer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         btnCreatePage = findViewById(R.id.btnCreatePage);
         menuIcon = findViewById(R.id.menuIcon);
         toolbarTitle = findViewById(R.id.toolbarTitle);
+        LinearLayout componentContainer = findViewById(R.id.componentContainer);
 
+        pageStorage = new PageStorage(this);
+        pageListRenderer = new PageListRenderer(this, componentContainer);
 
         refreshPageList();
 
@@ -62,16 +67,12 @@ public class MainActivity extends AppCompatActivity {
         );
 
         btnCreatePage.setOnClickListener(view -> {
-            // Désactiver le bouton
             btnCreatePage.setEnabled(false);
 
             CreatePageDialogFragment dialog = new CreatePageDialogFragment(this::refreshPageList);
             dialog.show(getSupportFragmentManager(), "CreatePageDialog");
 
-            // Réactiver après un délai
-            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                btnCreatePage.setEnabled(true);
-            }, 1000); // 1 seconde
+            new Handler(Looper.getMainLooper()).postDelayed(() -> btnCreatePage.setEnabled(true), 1000);
         });
 
         menuIcon.setOnClickListener(view -> {
@@ -80,67 +81,41 @@ public class MainActivity extends AppCompatActivity {
             MenuDialogFragment menu = new MenuDialogFragment();
             menu.show(getSupportFragmentManager(), "MenuDialog");
 
-            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                menuIcon.setEnabled(true);
-            }, 800);
+            new Handler(Looper.getMainLooper()).postDelayed(() -> menuIcon.setEnabled(true), 800);
         });
 
         clickSecretCount = 0;
-        toolbarTitle.setOnClickListener( view -> {
+        toolbarTitle.setOnClickListener(view -> {
             clickSecretCount++;
-            if(clickSecretCount >= 14){
+            if (clickSecretCount >= 14) {
                 clickSecretCount = 0;
                 Toast.makeText(this, "Pages secrètes trouvées", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(MainActivity.this, SecretMainActivity.class);
                 secretMainLauncher.launch(intent);
             }
-
         });
-
-
     }
 
     private void refreshPageList() {
-        File file = new File(getFilesDir(), "pages.json");
-        if (!file.exists()) {
-            Toast.makeText(this, "pages.json introuvable", Toast.LENGTH_LONG).show();
+        if (!pageStorage.hasPagesFile(false)) {
+            Toast.makeText(this, PageStorage.PAGES_FILE + " introuvable", Toast.LENGTH_LONG).show();
             return;
         }
-        ObjectMapper om = new ObjectMapper();
 
-        // component de la liste
-        LinearLayout container = findViewById(R.id.componentContainer);
-        container.removeAllViews();
+        pageListRenderer.clear();
 
         try {
-            List<Page> verifyPages = om.readValue(file, new TypeReference<List<Page>>() {});
-            System.out.println("Pages chargées : " + verifyPages.size());
-            for (Page p : verifyPages) {
-                container.addView(createItem(p));
-            }
-
+            List<Page> pages = pageStorage.loadPages(false);
+            System.out.println("Pages chargées : " + pages.size());
+            pageListRenderer.render(pages, this::openModifyPage);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private PageItemComponent createItem(Page p){
-        PageItemComponent item = new PageItemComponent(this);
-        item.bind(p); // Liaison des données
-
-        item.setOnClickListener(v -> {
-            Page clickedPage = item.getPage();
-
-            Intent intent = new Intent(MainActivity.this, ModifyPageActivity.class);
-            intent.putExtra("page", clickedPage); // Envoie l'objet
-            modifyPageLauncher.launch(intent);
-        });
-
-        item.setOnLongClickListener(v -> {
-            // TODO
-            return false;
-        });
-
-        return item;
+    private void openModifyPage(Page clickedPage) {
+        Intent intent = new Intent(MainActivity.this, ModifyPageActivity.class);
+        intent.putExtra("page", clickedPage);
+        modifyPageLauncher.launch(intent);
     }
 }
