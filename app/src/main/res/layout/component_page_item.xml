@@ -14,8 +14,10 @@
     <!-- Icône 📄 -->
     <TextView
         android:id="@+id/pageIconView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/menu_icon_pill"
+        android:gravity="center"
         android:text="📄"
         android:textSize="24sp"
         android:textColor="#992222"
@@ -38,12 +40,43 @@
         android:textColor="@color/textColor"
         android:textSize="22sp"
 
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/pageTimeView"
+        app:layout_constraintBottom_toTopOf="@id/pageMetaView"
+        app:layout_constraintEnd_toStartOf="@id/pageTypeView"
         app:layout_constraintHorizontal_bias="0.356"
         app:layout_constraintStart_toEndOf="@id/pageIconView"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.444" />
+
+    <TextView
+        android:id="@+id/pageMetaView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="Dernière modification"
+        android:textColor="#88222222"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/pageDateView"
+        app:layout_constraintStart_toEndOf="@id/pageIconView"
+        app:layout_constraintTop_toBottomOf="@id/pageTitleView" />
+
+    <TextView
+        android:id="@+id/pageTypeView"
+        android:layout_width="wrap_content"
+        android:layout_height="26dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/menu_item_selected"
+        android:fontFamily="sans-serif-light"
+        android:gravity="center"
+        android:minWidth="70dp"
+        android:paddingHorizontal="10dp"
+        android:text="Note"
+        android:textColor="@color/textColor"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toStartOf="@id/pageTimeView"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Heure -->
     <TextView

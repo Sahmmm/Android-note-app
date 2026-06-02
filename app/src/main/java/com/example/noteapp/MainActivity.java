@@ -24,13 +24,14 @@ import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MenuDialogFragment.OnMenuActionSelectedListener {
 
     private FloatingActionButton btnCreatePage;
     private ActivityResultLauncher<Intent> modifyPageLauncher, secretMainLauncher;
     private ImageView menuIcon;
     private TextView toolbarTitle;
     private int clickSecretCount;
+    private String currentTypeFilter = Page.TYPE_NOTE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         refreshPageList();
+        updateToolbarTitle();
 
         modifyPageLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -65,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
             // Désactiver le bouton
             btnCreatePage.setEnabled(false);
 
-            CreatePageDialogFragment dialog = new CreatePageDialogFragment(this::refreshPageList);
+            CreatePageDialogFragment dialog = new CreatePageDialogFragment(this::refreshPageList, currentTypeFilter);
             dialog.show(getSupportFragmentManager(), "CreatePageDialog");
 
             // Réactiver après un délai
@@ -78,6 +80,9 @@ public class MainActivity extends AppCompatActivity {
             menuIcon.setEnabled(false);
 
             MenuDialogFragment menu = new MenuDialogFragment();
+            Bundle args = new Bundle();
+            args.putString("selectedAction", currentTypeFilter);
+            menu.setArguments(args);
             menu.show(getSupportFragmentManager(), "MenuDialog");
 
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
@@ -101,22 +106,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void refreshPageList() {
+        LinearLayout container = findViewById(R.id.componentContainer);
+        container.removeAllViews();
+
         File file = new File(getFilesDir(), "pages.json");
         if (!file.exists()) {
-            Toast.makeText(this, "pages.json introuvable", Toast.LENGTH_LONG).show();
             return;
         }
         ObjectMapper om = new ObjectMapper();
-
-        // component de la liste
-        LinearLayout container = findViewById(R.id.componentContainer);
-        container.removeAllViews();
 
         try {
             List<Page> verifyPages = om.readValue(file, new TypeReference<List<Page>>() {});
             System.out.println("Pages chargées : " + verifyPages.size());
             for (Page p : verifyPages) {
-                container.addView(createItem(p));
+                if (matchesCurrentFilter(p)) {
+                    container.addView(createItem(p));
+                }
             }
 
         } catch (IOException e) {
@@ -142,5 +147,34 @@ public class MainActivity extends AppCompatActivity {
         });
 
         return item;
+    }
+
+    @Override
+    public void onMenuActionSelected(String action) {
+        if (MenuDialogFragment.ACTION_SETTINGS.equals(action)) {
+            startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+            return;
+        }
+        currentTypeFilter = action;
+        updateToolbarTitle();
+        refreshPageList();
+    }
+
+    private boolean matchesCurrentFilter(Page page) {
+        return currentTypeFilter.equals(page.getType());
+    }
+
+    private void updateToolbarTitle() {
+        switch (currentTypeFilter) {
+            case Page.TYPE_REMINDER:
+                toolbarTitle.setText("Rappels");
+                break;
+            case Page.TYPE_LIST:
+                toolbarTitle.setText("Listes");
+                break;
+            default:
+                toolbarTitle.setText("Notes");
+                break;
+        }
     }
 }

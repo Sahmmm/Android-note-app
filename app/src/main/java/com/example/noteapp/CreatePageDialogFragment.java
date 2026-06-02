@@ -13,6 +13,8 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import androidx.annotation.DrawableRes;
@@ -38,12 +40,20 @@ public class CreatePageDialogFragment extends DialogFragment {
         void onPageCreated();
     }
     private OnPageCreatedListener listener;
+    private String defaultType = Page.TYPE_NOTE;
     public CreatePageDialogFragment(OnPageCreatedListener listener) {
         this.listener = listener;
     }
-    private EditText titleInput, editTextIcon;
+
+    public CreatePageDialogFragment(OnPageCreatedListener listener, String defaultType) {
+        this.listener = listener;
+        this.defaultType = defaultType;
+    }
+    private EditText titleInput, editTextIcon, reminderDateInput, reminderTimeInput;
     private CheckBox checkSecret;
     private ImageButton saveButton;
+    private LinearLayout reminderFields;
+    private RadioGroup typeRadioGroup;
     private View btnClose, color1View, color2View, color3View, color4View, color5View, color6View, colorAddView;
     private ImageView checkOverlay1, checkOverlay2, checkOverlay3, checkOverlay4, checkOverlay5, checkOverlay6;
 
@@ -56,8 +66,12 @@ public class CreatePageDialogFragment extends DialogFragment {
 
         titleInput = view.findViewById(R.id.editTitleInput);
         editTextIcon = view.findViewById(R.id.editTextIcon);
+        reminderDateInput = view.findViewById(R.id.reminderDateInput);
+        reminderTimeInput = view.findViewById(R.id.reminderTimeInput);
         saveButton = view.findViewById(R.id.saveButton);
         checkSecret = view.findViewById(R.id.checkSecret);
+        typeRadioGroup = view.findViewById(R.id.typeRadioGroup);
+        reminderFields = view.findViewById(R.id.reminderFields);
         btnClose = view.findViewById(R.id.btnClose);
         checkSecret = view.findViewById(R.id.checkSecret);
         checkOverlay1 = view.findViewById(R.id.checkOverlay1);
@@ -78,6 +92,13 @@ public class CreatePageDialogFragment extends DialogFragment {
 
         List<View> colorsChecked = Arrays.asList(color1View, color2View, color3View, color4View, color5View, color6View);
         AtomicReference<String> backgroundColor = new AtomicReference<>("#B0E1FA");
+
+        setSelectedType(defaultType);
+        reminderFields.setVisibility(Page.TYPE_REMINDER.equals(defaultType) ? View.VISIBLE : View.GONE);
+        typeRadioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            String selectedType = getSelectedType(checkedId);
+            reminderFields.setVisibility(Page.TYPE_REMINDER.equals(selectedType) ? View.VISIBLE : View.GONE);
+        });
 
         for (int i = 0; i < colorsChecked.size(); i++) {
             final int index = i; // capture correcte
@@ -110,6 +131,9 @@ public class CreatePageDialogFragment extends DialogFragment {
             String title = titleInput.getText().toString();
             String icon = editTextIcon.getText().toString();
             boolean isSecret = checkSecret.isChecked();
+            String selectedType = getSelectedType(typeRadioGroup.getCheckedRadioButtonId());
+            String reminderDate = reminderDateInput.getText().toString();
+            String reminderTime = reminderTimeInput.getText().toString();
 
             String json;
             if(isSecret){
@@ -134,8 +158,7 @@ public class CreatePageDialogFragment extends DialogFragment {
 
                 // Ajouter nouvelle page
                 String id = UUID.randomUUID().toString();
-                System.out.println("à la creation : "+isSecret);
-                Page newPage = new Page(id, title, icon, backgroundColor.get(),isSecret);
+                Page newPage = new Page(id, title, icon, backgroundColor.get(), isSecret, selectedType, reminderDate, reminderTime);
                 pages.add(newPage);
 
                 try {
@@ -177,6 +200,26 @@ public class CreatePageDialogFragment extends DialogFragment {
             dialog.show(requireActivity().getSupportFragmentManager(), "AddNewColor");
         });
         return view;
+    }
+
+    private String getSelectedType(int checkedId) {
+        if (checkedId == R.id.typeReminder) {
+            return Page.TYPE_REMINDER;
+        }
+        if (checkedId == R.id.typeList) {
+            return Page.TYPE_LIST;
+        }
+        return Page.TYPE_NOTE;
+    }
+
+    private void setSelectedType(String type) {
+        if (Page.TYPE_REMINDER.equals(type)) {
+            typeRadioGroup.check(R.id.typeReminder);
+        } else if (Page.TYPE_LIST.equals(type)) {
+            typeRadioGroup.check(R.id.typeList);
+        } else {
+            typeRadioGroup.check(R.id.typeNote);
+        }
     }
 
 

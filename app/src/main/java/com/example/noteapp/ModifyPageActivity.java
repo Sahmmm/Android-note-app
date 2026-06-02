@@ -31,7 +31,7 @@ public class ModifyPageActivity extends AppCompatActivity {
 
     private ImageView imageReturnView, imageOptionsView;
     private EditText editTextContent;
-    private TextView pageTitleView;
+    private TextView pageTitleView, pageMetaView;
     private LinearLayout mainLayout;
 
     @Override
@@ -43,6 +43,7 @@ public class ModifyPageActivity extends AppCompatActivity {
         imageOptionsView = findViewById(R.id.imageOptionsView);
         editTextContent = findViewById(R.id.editTextContent);
         pageTitleView = findViewById(R.id.pageTitleView);
+        pageMetaView = findViewById(R.id.pageMetaView);
         mainLayout = findViewById(R.id.mainLayout);
 
         Page linkedPage = (Page) getIntent().getSerializableExtra("page");
@@ -51,6 +52,7 @@ public class ModifyPageActivity extends AppCompatActivity {
             pageTitleView.setText(linkedPage.getTitle());
             editTextContent.setText(linkedPage.getContent());
             mainLayout.setBackgroundColor(Color.parseColor(linkedPage.getColorFont()));
+            bindPageType(linkedPage);
         }
 
         imageReturnView.setOnClickListener(view -> {
@@ -73,13 +75,21 @@ public class ModifyPageActivity extends AppCompatActivity {
                     Bundle args = new Bundle();
                     assert linkedPage != null;
                     args.putString("color", linkedPage.getColorFont()); // ex: "#FF00FF"
+                    args.putString("title", linkedPage.getTitle());
+                    args.putString("icon", linkedPage.getIcon());
+                    args.putString("type", linkedPage.getType());
+                    args.putString("reminderDate", linkedPage.getReminderDate());
+                    args.putString("reminderTime", linkedPage.getReminderTime());
                     dialog.setArguments(args);
 
-                    dialog.setOnModifyListener((newTitle, newIcon) -> {
+                    dialog.setOnModifyListener((newTitle, newIcon, newType, reminderDate, reminderTime) -> {
                         pageTitleView.setText(newTitle);
                         linkedPage.setTitle(newTitle);
                         linkedPage.setIcon(newIcon);
-                        //linkedPage.setSecret(isSecret);
+                        linkedPage.setType(newType);
+                        linkedPage.setReminderDate(reminderDate);
+                        linkedPage.setReminderTime(reminderTime);
+                        bindPageType(linkedPage);
                         saveChange(linkedPage);
                     });
                     dialog.show(getSupportFragmentManager(), "ModifyPageDialog");
@@ -145,6 +155,9 @@ public class ModifyPageActivity extends AppCompatActivity {
                 verifyPages.get(i).setContent(editTextContent.getText().toString().trim());
                 // To manage the change made
                 verifyPages.get(i).setTitle(page.getTitle());
+                verifyPages.get(i).setType(page.getType());
+                verifyPages.get(i).setReminderDate(page.getReminderDate());
+                verifyPages.get(i).setReminderTime(page.getReminderTime());
                 if(!page.getIcon().isEmpty()) {
                     verifyPages.get(i).setIcon(page.getIcon());
                 }
@@ -187,6 +200,21 @@ public class ModifyPageActivity extends AppCompatActivity {
             om.writeValue(file, verifyPages);
         } catch (IOException e) {
             e.printStackTrace(); // gestion d'erreur en écriture
+        }
+    }
+
+    private void bindPageType(Page page) {
+        if (page.isReminder()) {
+            pageMetaView.setVisibility(View.VISIBLE);
+            pageMetaView.setText(page.getReminderLabel());
+            editTextContent.setHint("Détails du rappel...");
+        } else if (page.isList()) {
+            pageMetaView.setVisibility(View.VISIBLE);
+            pageMetaView.setText("Une ligne par élément de liste");
+            editTextContent.setHint("Ajoute un élément par ligne...");
+        } else {
+            pageMetaView.setVisibility(View.GONE);
+            editTextContent.setHint("Écris ici...");
         }
     }
 }

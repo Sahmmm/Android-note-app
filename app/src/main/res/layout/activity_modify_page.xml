@@ -60,6 +60,19 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <TextView
+            android:id="@+id/pageMetaView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#0F000000"
+            android:fontFamily="sans-serif-light"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:text="Information"
+            android:textColor="@color/textColorBis"
+            android:textSize="14sp"
+            android:visibility="gone" />
+
         <EditText
             android:id="@+id/editTextContent"
             android:layout_width="match_parent"

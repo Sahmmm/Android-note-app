@@ -15,7 +15,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 public class PageItemComponent extends LinearLayout {
     public TextView titleView;
-    public TextView dateView, timeView, pageIconView;
+    public TextView dateView, timeView, pageIconView, typeView, metaView;
     private Page pageData;
     private ConstraintLayout pageContainer;
 
@@ -40,6 +40,8 @@ public class PageItemComponent extends LinearLayout {
         timeView = findViewById(R.id.pageTimeView);
         dateView = findViewById(R.id.pageDateView);
         pageIconView = findViewById(R.id.pageIconView);
+        typeView = findViewById(R.id.pageTypeView);
+        metaView = findViewById(R.id.pageMetaView);
         pageContainer = findViewById(R.id.pageContainer);
     }
 
@@ -49,6 +51,8 @@ public class PageItemComponent extends LinearLayout {
         timeView.setText(page.getTime());
         dateView.setText(page.getDate());
         pageIconView.setText(page.getIcon());
+        typeView.setText(page.getTypeLabel());
+        metaView.setText(getMetaText(page));
 
         int color = Color.parseColor(page.getColorFont());
 //        pageContainer.setBackgroundTintList(ColorStateList.valueOf(color));
@@ -68,6 +72,21 @@ public class PageItemComponent extends LinearLayout {
 
     public Page getPage() {
         return pageData;
+    }
+
+    private String getMetaText(Page page) {
+        if (page.isReminder()) {
+            return page.getReminderLabel();
+        }
+        if (page.isList()) {
+            int itemsCount = 0;
+            String content = page.getContent();
+            if (content != null && !content.trim().isEmpty()) {
+                itemsCount = content.trim().split("\\R+").length;
+            }
+            return itemsCount + (itemsCount > 1 ? " éléments" : " élément");
+        }
+        return "Modifiée le " + page.getDate();
     }
 
 }

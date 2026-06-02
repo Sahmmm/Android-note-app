@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bgColor"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/settingsBackButton"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/menu_icon_pill"
+            android:contentDescription="Retour"
+            android:padding="12dp"
+            app:srcCompat="@drawable/ic_back_arrow"
+            app:tint="@color/textColor" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif-light"
+            android:text="Paramètres"
+            android:textColor="@color/textColor"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="22dp"
+        android:text="Aperçu local"
+        android:textColor="@color/textColorBis"
+        android:textSize="16sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:orientation="vertical">
+
+        <include layout="@layout/component_settings_stat_public" />
+        <include layout="@layout/component_settings_stat_secret" />
+        <include layout="@layout/component_settings_stat_reminders" />
+        <include layout="@layout/component_settings_stat_lists" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/menu_panel_card"
+        android:fontFamily="sans-serif-light"
+        android:padding="18dp"
+        android:text="Les notes, rappels et listes restent stockés uniquement sur cet appareil dans les fichiers JSON de l’application."
+        android:textColor="@color/textColor"
+        android:textSize="16sp" />
+</LinearLayout>

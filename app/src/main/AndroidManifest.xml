@@ -26,6 +26,7 @@
         <activity android:name=".ViewPageActivity" />
         <activity android:name=".ModifyPageActivity" />
         <activity android:name=".SecretMainActivity" />
+        <activity android:name=".SettingsActivity" />
     </application>
 
 </manifest>
