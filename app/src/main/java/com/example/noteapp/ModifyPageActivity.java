@@ -5,12 +5,15 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
@@ -30,9 +33,10 @@ import java.util.Locale;
 public class ModifyPageActivity extends AppCompatActivity {
 
     private ImageView imageReturnView, imageOptionsView;
-    private EditText editTextContent;
-    private TextView pageTitleView, pageMetaView;
-    private LinearLayout mainLayout;
+    private EditText editTextContent, newListItemInput;
+    private TextView pageTitleView, pageMetaView, addListItemButton;
+    private LinearLayout mainLayout, listEditorLayout, listItemsContainer;
+    private float touchStartX, touchStartY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +46,13 @@ public class ModifyPageActivity extends AppCompatActivity {
         imageReturnView = findViewById(R.id.imageReturnView);
         imageOptionsView = findViewById(R.id.imageOptionsView);
         editTextContent = findViewById(R.id.editTextContent);
+        newListItemInput = findViewById(R.id.newListItemInput);
         pageTitleView = findViewById(R.id.pageTitleView);
         pageMetaView = findViewById(R.id.pageMetaView);
+        addListItemButton = findViewById(R.id.addListItemButton);
         mainLayout = findViewById(R.id.mainLayout);
+        listEditorLayout = findViewById(R.id.listEditorLayout);
+        listItemsContainer = findViewById(R.id.listItemsContainer);
 
         Page linkedPage = (Page) getIntent().getSerializableExtra("page");
 
@@ -55,11 +63,12 @@ public class ModifyPageActivity extends AppCompatActivity {
             bindPageType(linkedPage);
         }
 
+        addListItemButton.setOnClickListener(v -> addListItemFromInput());
+        setupSwipeToExit(linkedPage);
+
         imageReturnView.setOnClickListener(view -> {
             assert linkedPage != null;
-            saveChange(linkedPage);
-            setResult(RESULT_OK); // ✅ Indique que tout s’est bien passé
-            finish();
+            closePage(linkedPage);
         });
 
         imageOptionsView.setOnClickListener(v -> {
@@ -100,7 +109,7 @@ public class ModifyPageActivity extends AppCompatActivity {
                     finish();
                     return true;
                 } else if (id == R.id.menu_copy) {
-                    String textToCopy = editTextContent.getText().toString();
+                    String textToCopy = getCurrentContent(linkedPage);
 
                     // Copie dans le presse-papier
                     ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
@@ -147,12 +156,13 @@ public class ModifyPageActivity extends AppCompatActivity {
         for (int i = 0; i < verifyPages.size(); i++){
 
             if (verifyPages.get(i).getId().equals(currentPageID)) {
-                // only if content get changed
-                if(!verifyPages.get(i).getContent().equals(editTextContent.getText().toString().trim())){
+                String currentContent = getCurrentContent(page);
+                if(!verifyPages.get(i).getContent().equals(currentContent)){
                     verifyPages.get(i).setDate(new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date()));
                     verifyPages.get(i).setTime(new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date()));
                 }
-                verifyPages.get(i).setContent(editTextContent.getText().toString().trim());
+                verifyPages.get(i).setContent(currentContent);
+                page.setContent(currentContent);
                 // To manage the change made
                 verifyPages.get(i).setTitle(page.getTitle());
                 verifyPages.get(i).setType(page.getType());
@@ -205,16 +215,118 @@ public class ModifyPageActivity extends AppCompatActivity {
 
     private void bindPageType(Page page) {
         if (page.isReminder()) {
+            editTextContent.setVisibility(View.VISIBLE);
+            listEditorLayout.setVisibility(View.GONE);
             pageMetaView.setVisibility(View.VISIBLE);
             pageMetaView.setText(page.getReminderLabel());
             editTextContent.setHint("Détails du rappel...");
         } else if (page.isList()) {
+            editTextContent.setVisibility(View.GONE);
+            listEditorLayout.setVisibility(View.VISIBLE);
             pageMetaView.setVisibility(View.VISIBLE);
             pageMetaView.setText("Une ligne par élément de liste");
-            editTextContent.setHint("Ajoute un élément par ligne...");
+            bindListItems(page.getContent());
         } else {
+            editTextContent.setVisibility(View.VISIBLE);
+            listEditorLayout.setVisibility(View.GONE);
             pageMetaView.setVisibility(View.GONE);
             editTextContent.setHint("Écris ici...");
         }
+    }
+
+    private void bindListItems(String content) {
+        listItemsContainer.removeAllViews();
+        String trimmedContent = content == null ? "" : content.trim();
+        if (trimmedContent.isEmpty()) {
+            return;
+        }
+
+        String[] lines = trimmedContent.split("\\R+");
+        for (String line : lines) {
+            boolean checked = line.startsWith("- [x] ") || line.startsWith("- [X] ");
+            String text = line
+                    .replaceFirst("^- \\[[xX]\\] ", "")
+                    .replaceFirst("^- \\[ \\] ", "")
+                    .trim();
+            if (!text.isEmpty()) {
+                addCheckableListItem(text, checked);
+            }
+        }
+    }
+
+    private void addListItemFromInput() {
+        String text = newListItemInput.getText().toString().trim();
+        if (text.isEmpty()) {
+            Toast.makeText(this, "Élément vide", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        addCheckableListItem(text, false);
+        newListItemInput.setText("");
+    }
+
+    private void addCheckableListItem(String text, boolean checked) {
+        CheckBox checkBox = new CheckBox(this);
+        checkBox.setText(text);
+        checkBox.setChecked(checked);
+        checkBox.setTextColor(getResources().getColor(R.color.textColorBis));
+        checkBox.setTextSize(18);
+        checkBox.setPadding(8, 10, 8, 10);
+        checkBox.setOnLongClickListener(v -> {
+            listItemsContainer.removeView(v);
+            return true;
+        });
+        listItemsContainer.addView(checkBox);
+    }
+
+    private String getCurrentContent(Page page) {
+        if (page != null && page.isList()) {
+            return serializeListItems();
+        }
+        return editTextContent.getText().toString().trim();
+    }
+
+    private String serializeListItems() {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < listItemsContainer.getChildCount(); i++) {
+            View child = listItemsContainer.getChildAt(i);
+            if (child instanceof CheckBox) {
+                CheckBox checkBox = (CheckBox) child;
+                String text = checkBox.getText().toString().trim();
+                if (!text.isEmpty()) {
+                    if (builder.length() > 0) {
+                        builder.append('\n');
+                    }
+                    builder.append(checkBox.isChecked() ? "- [x] " : "- [ ] ");
+                    builder.append(text);
+                }
+            }
+        }
+        return builder.toString();
+    }
+
+    private void setupSwipeToExit(Page linkedPage) {
+        View.OnTouchListener listener = (view, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                touchStartX = event.getX();
+                touchStartY = event.getY();
+            } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                float deltaX = event.getX() - touchStartX;
+                float deltaY = Math.abs(event.getY() - touchStartY);
+                if (deltaX > 180 && deltaY < 120 && linkedPage != null) {
+                    closePage(linkedPage);
+                    return true;
+                }
+            }
+            return false;
+        };
+        mainLayout.setOnTouchListener(listener);
+        editTextContent.setOnTouchListener(listener);
+        listEditorLayout.setOnTouchListener(listener);
+    }
+
+    private void closePage(Page page) {
+        saveChange(page);
+        setResult(RESULT_OK);
+        finish();
     }
 }

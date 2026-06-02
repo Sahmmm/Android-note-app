@@ -62,6 +62,22 @@
                     android:textSize="24sp" />
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <EditText
+            android:id="@+id/searchInput"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/menu_item"
+            android:hint="Rechercher..."
+            android:inputType="text"
+            android:paddingHorizontal="18dp"
+            android:singleLine="true"
+            android:textColor="@color/textColor"
+            android:textColorHint="@color/textColorBis"
+            android:textSize="16sp" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <!-- ScrollView qui démarre sous la barre grâce au comportement -->
@@ -75,12 +91,78 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
-            android:id="@+id/componentContainer"
+            android:id="@+id/listContentWrapper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="8dp"/>
+            android:padding="8dp">
+
+            <LinearLayout
+                android:id="@+id/emptyStateContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="12dp"
+                android:background="@drawable/menu_panel_card"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="28dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/emptyStateIcon"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:background="@drawable/menu_icon_pill"
+                    android:gravity="center"
+                    android:text="✦"
+                    android:textColor="@color/textColor"
+                    android:textSize="30sp" />
+
+                <TextView
+                    android:id="@+id/emptyStateTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:fontFamily="sans-serif-light"
+                    android:gravity="center"
+                    android:text="Aucune note"
+                    android:textColor="@color/textColor"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/emptyStateSubtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center"
+                    android:text="Appuie sur + pour commencer."
+                    android:textColor="@color/textColorBis"
+                    android:textSize="15sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/componentContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </LinearLayout>
     </ScrollView>
+
+    <TextView
+        android:id="@+id/trashDropZone"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:layout_gravity="bottom"
+        android:layout_marginHorizontal="18dp"
+        android:layout_marginBottom="88dp"
+        android:background="@drawable/trash_drop_zone"
+        android:gravity="center"
+        android:text="Glisse ici pour supprimer"
+        android:textColor="@color/textColor"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
 
     <!-- FAB en bas à droite -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton

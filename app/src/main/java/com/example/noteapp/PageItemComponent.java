@@ -79,12 +79,24 @@ public class PageItemComponent extends LinearLayout {
             return page.getReminderLabel();
         }
         if (page.isList()) {
-            int itemsCount = 0;
+            int totalItems = 0;
+            int checkedItems = 0;
             String content = page.getContent();
             if (content != null && !content.trim().isEmpty()) {
-                itemsCount = content.trim().split("\\R+").length;
+                String[] lines = content.trim().split("\\R+");
+                for (String line : lines) {
+                    if (!line.trim().isEmpty()) {
+                        totalItems++;
+                        if (line.startsWith("- [x] ") || line.startsWith("- [X] ")) {
+                            checkedItems++;
+                        }
+                    }
+                }
             }
-            return itemsCount + (itemsCount > 1 ? " éléments" : " élément");
+            if (totalItems == 0) {
+                return "Liste vide";
+            }
+            return checkedItems + "/" + totalItems + " cochés";
         }
         return "Modifiée le " + page.getDate();
     }
