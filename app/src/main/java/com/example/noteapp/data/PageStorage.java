@@ -95,4 +95,13 @@ public class PageStorage {
     private File getPagesFile(boolean secret) {
         return new File(filesDir, secret ? SECRET_PAGES_FILE : PAGES_FILE);
     }
+
+    private List<Page> loadPagesForWrite(boolean secret) {
+        try {
+            return loadPages(secret);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
 }
