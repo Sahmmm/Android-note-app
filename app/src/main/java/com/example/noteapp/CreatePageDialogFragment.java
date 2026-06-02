@@ -13,23 +13,17 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.io.File;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class CreatePageDialogFragment extends DialogFragment {
@@ -38,12 +32,21 @@ public class CreatePageDialogFragment extends DialogFragment {
         void onPageCreated();
     }
     private OnPageCreatedListener listener;
+    private String defaultType = Page.TYPE_NOTE;
     public CreatePageDialogFragment(OnPageCreatedListener listener) {
         this.listener = listener;
     }
-    private EditText titleInput, editTextIcon;
+
+    public CreatePageDialogFragment(OnPageCreatedListener listener, String defaultType) {
+        this.listener = listener;
+        this.defaultType = defaultType;
+    }
+    private EditText titleInput, editTextIcon, reminderDateInput, reminderTimeInput;
     private CheckBox checkSecret;
     private ImageButton saveButton;
+    private LinearLayout reminderFields;
+    private RadioGroup typeRadioGroup;
+    private PageTypeFormHelper pageTypeFormHelper;
     private View btnClose, color1View, color2View, color3View, color4View, color5View, color6View, colorAddView;
     private ImageView checkOverlay1, checkOverlay2, checkOverlay3, checkOverlay4, checkOverlay5, checkOverlay6;
 
@@ -56,8 +59,12 @@ public class CreatePageDialogFragment extends DialogFragment {
 
         titleInput = view.findViewById(R.id.editTitleInput);
         editTextIcon = view.findViewById(R.id.editTextIcon);
+        reminderDateInput = view.findViewById(R.id.reminderDateInput);
+        reminderTimeInput = view.findViewById(R.id.reminderTimeInput);
         saveButton = view.findViewById(R.id.saveButton);
         checkSecret = view.findViewById(R.id.checkSecret);
+        typeRadioGroup = view.findViewById(R.id.typeRadioGroup);
+        reminderFields = view.findViewById(R.id.reminderFields);
         btnClose = view.findViewById(R.id.btnClose);
         checkSecret = view.findViewById(R.id.checkSecret);
         checkOverlay1 = view.findViewById(R.id.checkOverlay1);
@@ -78,6 +85,9 @@ public class CreatePageDialogFragment extends DialogFragment {
 
         List<View> colorsChecked = Arrays.asList(color1View, color2View, color3View, color4View, color5View, color6View);
         AtomicReference<String> backgroundColor = new AtomicReference<>("#B0E1FA");
+
+        pageTypeFormHelper = new PageTypeFormHelper(typeRadioGroup, reminderFields);
+        pageTypeFormHelper.bind(defaultType);
 
         for (int i = 0; i < colorsChecked.size(); i++) {
             final int index = i; // capture correcte
@@ -110,39 +120,14 @@ public class CreatePageDialogFragment extends DialogFragment {
             String title = titleInput.getText().toString();
             String icon = editTextIcon.getText().toString();
             boolean isSecret = checkSecret.isChecked();
-
-            String json;
-            if(isSecret){
-                json = "pagesSecret.json";
-            } else {
-                json = "pages.json";
-            }
+            String selectedType = pageTypeFormHelper.getSelectedType();
+            String reminderDate = reminderDateInput.getText().toString();
+            String reminderTime = reminderTimeInput.getText().toString();
 
             if (!title.isEmpty()) {
-                File file = new File(requireContext().getFilesDir(), json);
-                ObjectMapper om = new ObjectMapper();
-                List<Page> pages = new ArrayList<>();
-
-                // Lire les pages existantes
-                if (file.exists()) {
-                    try {
-                        pages = om.readValue(file, new TypeReference<List<Page>>() {});
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                // Ajouter nouvelle page
                 String id = UUID.randomUUID().toString();
-                System.out.println("à la creation : "+isSecret);
-                Page newPage = new Page(id, title, icon, backgroundColor.get(),isSecret);
-                pages.add(newPage);
-
-                try {
-                    om.writeValue(file, pages);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                Page newPage = new Page(id, title, icon, backgroundColor.get(), isSecret, selectedType, reminderDate, reminderTime);
+                new PageRepository(requireContext()).addPage(newPage);
 
                 if (listener != null) listener.onPageCreated();
                 dismiss(); // Fermer la popup
@@ -178,7 +163,6 @@ public class CreatePageDialogFragment extends DialogFragment {
         });
         return view;
     }
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

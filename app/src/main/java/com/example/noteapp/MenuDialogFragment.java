@@ -17,7 +17,16 @@ import androidx.fragment.app.DialogFragment;
 
 public class MenuDialogFragment extends DialogFragment {
 
-    private TextView btnQuit, menuLists, menuNotes, menuReminders;
+    public static final String ACTION_NOTES = Page.TYPE_NOTE;
+    public static final String ACTION_REMINDERS = Page.TYPE_REMINDER;
+    public static final String ACTION_LISTS = Page.TYPE_LIST;
+    public static final String ACTION_SETTINGS = "settings";
+
+    public interface OnMenuActionSelectedListener {
+        void onMenuActionSelected(String action);
+    }
+
+    private TextView btnQuit, btnSettings, menuLists, menuNotes, menuReminders;
 
     private LinearLayout linearLayoutMenu;
     @Nullable
@@ -42,18 +51,28 @@ public class MenuDialogFragment extends DialogFragment {
         menuLists = view.findViewById(R.id.menuLists);
         menuNotes = view.findViewById(R.id.menuNotes);
         menuReminders = view.findViewById(R.id.menuReminders);
-        // Listeners
-        menuNotes.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Prout", Toast.LENGTH_SHORT).show();
-        });
-        menuLists.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "à venir...", Toast.LENGTH_SHORT).show();
-        });
-        menuReminders.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "à venir...", Toast.LENGTH_SHORT).show();
-        });
+        btnSettings = view.findViewById(R.id.btnSettings);
+        bindSelectedState(getArguments() != null ? getArguments().getString("selectedAction", ACTION_NOTES) : ACTION_NOTES);
+
+        menuNotes.setOnClickListener(v -> selectAction(ACTION_NOTES));
+        menuLists.setOnClickListener(v -> selectAction(ACTION_LISTS));
+        menuReminders.setOnClickListener(v -> selectAction(ACTION_REMINDERS));
+        btnSettings.setOnClickListener(v -> selectAction(ACTION_SETTINGS));
 
         return view;
+    }
+
+    private void selectAction(String action) {
+        if (getActivity() instanceof OnMenuActionSelectedListener) {
+            ((OnMenuActionSelectedListener) getActivity()).onMenuActionSelected(action);
+        }
+        dismiss();
+    }
+
+    private void bindSelectedState(String selectedAction) {
+        menuNotes.setBackgroundResource(ACTION_NOTES.equals(selectedAction) ? R.drawable.menu_item_selected : R.drawable.menu_item);
+        menuReminders.setBackgroundResource(ACTION_REMINDERS.equals(selectedAction) ? R.drawable.menu_item_selected : R.drawable.menu_item);
+        menuLists.setBackgroundResource(ACTION_LISTS.equals(selectedAction) ? R.drawable.menu_item_selected : R.drawable.menu_item);
     }
 
 

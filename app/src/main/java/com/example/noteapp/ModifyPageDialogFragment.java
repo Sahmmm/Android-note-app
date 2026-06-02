@@ -8,9 +8,10 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,14 +19,16 @@ import androidx.fragment.app.DialogFragment;
 
 public class ModifyPageDialogFragment extends DialogFragment {
 
-    private EditText editTitleInput, editTextIcon;
-    private CheckBox checkSecret;
+    private EditText editTitleInput, editTextIcon, reminderDateInput, reminderTimeInput;
     private OnModifyListener listener;
     private ImageButton saveButton;
+    private LinearLayout reminderFields;
+    private RadioGroup typeRadioGroup;
+    private PageTypeFormHelper pageTypeFormHelper;
     private View btnClose;
 
     public interface OnModifyListener {
-        void onModify(String title, String icon);
+        void onModify(String title, String icon, String type, String reminderDate, String reminderTime);
     }
 
     public void setOnModifyListener(OnModifyListener listener) {
@@ -41,10 +44,26 @@ public class ModifyPageDialogFragment extends DialogFragment {
 
         editTitleInput = view.findViewById(R.id.editTitleInput);
         editTextIcon = view.findViewById(R.id.editTextIcon);
+        reminderDateInput = view.findViewById(R.id.reminderDateInput);
+        reminderTimeInput = view.findViewById(R.id.reminderTimeInput);
+        reminderFields = view.findViewById(R.id.reminderFields);
+        typeRadioGroup = view.findViewById(R.id.typeRadioGroup);
         saveButton = view.findViewById(R.id.saveButton);
         btnClose = view.findViewById(R.id.btnClose);
 
         String pageColor = getArguments() != null ? getArguments().getString("color", "#FFFFFF") : "#FFFFFF";
+        String pageTitle = getArguments() != null ? getArguments().getString("title", "") : "";
+        String pageIcon = getArguments() != null ? getArguments().getString("icon", "") : "";
+        String pageType = getArguments() != null ? getArguments().getString("type", Page.TYPE_NOTE) : Page.TYPE_NOTE;
+        String reminderDate = getArguments() != null ? getArguments().getString("reminderDate", "") : "";
+        String reminderTime = getArguments() != null ? getArguments().getString("reminderTime", "") : "";
+
+        editTitleInput.setText(pageTitle);
+        editTextIcon.setText(pageIcon);
+        reminderDateInput.setText(reminderDate);
+        reminderTimeInput.setText(reminderTime);
+        pageTypeFormHelper = new PageTypeFormHelper(typeRadioGroup, reminderFields);
+        pageTypeFormHelper.bind(pageType);
 
         int parsedColor = Color.parseColor(pageColor);
         saveButton.setBackgroundTintList(ColorStateList.valueOf(parsedColor));
@@ -57,11 +76,14 @@ public class ModifyPageDialogFragment extends DialogFragment {
         dialog.setOnShowListener(d -> {
             saveButton.setOnClickListener(v -> {
 
-                if (!editTitleInput.getText().isEmpty()) {
+                if (!editTitleInput.getText().toString().trim().isEmpty()) {
                     if (listener != null) {
                         listener.onModify(
                                 editTitleInput.getText().toString(),
-                                editTextIcon.getText().toString()
+                                editTextIcon.getText().toString(),
+                                pageTypeFormHelper.getSelectedType(),
+                                reminderDateInput.getText().toString(),
+                                reminderTimeInput.getText().toString()
                         );
                     }
                     dialog.dismiss(); // fermer le popup après sauvegarde
@@ -73,4 +95,5 @@ public class ModifyPageDialogFragment extends DialogFragment {
 
         return dialog;
     }
+
 }

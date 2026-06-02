@@ -34,6 +34,92 @@
             android:background="@drawable/ic_close_cross" />
     </LinearLayout>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:fontFamily="sans-serif-condensed"
+        android:text="Type"
+        android:textColor="@color/textColor"
+        android:textSize="20sp" />
+
+    <RadioGroup
+        android:id="@+id/typeRadioGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/typeNote"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:buttonTint="@color/bgDarkColor"
+            android:checked="true"
+            android:fontFamily="sans-serif-light"
+            android:text="Note"
+            android:textColor="@color/textColor"
+            android:textSize="16sp" />
+
+        <RadioButton
+            android:id="@+id/typeReminder"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:buttonTint="@color/bgDarkColor"
+            android:fontFamily="sans-serif-light"
+            android:text="Rappel"
+            android:textColor="@color/textColor"
+            android:textSize="16sp" />
+
+        <RadioButton
+            android:id="@+id/typeList"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:buttonTint="@color/bgDarkColor"
+            android:fontFamily="sans-serif-light"
+            android:text="Liste"
+            android:textColor="@color/textColor"
+            android:textSize="16sp" />
+    </RadioGroup>
+
+    <LinearLayout
+        android:id="@+id/reminderFields"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <EditText
+            android:id="@+id/reminderDateInput"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:hint="Date"
+            android:inputType="date"
+            android:maxLength="10"
+            android:padding="8dp"
+            android:textColor="@color/textColor"
+            android:textColorHint="@color/textColorBis" />
+
+        <EditText
+            android:id="@+id/reminderTimeInput"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:hint="Heure"
+            android:inputType="time"
+            android:maxLength="5"
+            android:padding="8dp"
+            android:textColor="@color/textColor"
+            android:textColorHint="@color/textColorBis" />
+    </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
