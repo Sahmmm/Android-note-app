@@ -78,7 +78,7 @@ public class ModifyPageDialogFragment extends DialogFragment {
         dialog.setOnShowListener(d -> {
             saveButton.setOnClickListener(v -> {
 
-                if (!editTitleInput.getText().isEmpty()) {
+                if (!editTitleInput.getText().toString().trim().isEmpty()) {
                     if (listener != null) {
                         listener.onModify(
                                 editTitleInput.getText().toString(),
