@@ -1,17 +1,18 @@
-package com.example.noteapp;
+package com.example.noteapp.ui.widget;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.ViewOutlineProvider;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
+
+import com.example.noteapp.R;
+import com.example.noteapp.model.Page;
 
 public class PageItemComponent extends LinearLayout {
     public TextView titleView;
@@ -44,31 +45,22 @@ public class PageItemComponent extends LinearLayout {
     }
 
     public void bind(Page page) {
-        this.pageData = page;
+        pageData = page;
         titleView.setText(page.getTitle());
         timeView.setText(page.getTime());
         dateView.setText(page.getDate());
         pageIconView.setText(page.getIcon());
 
         int color = Color.parseColor(page.getColorFont());
-//        pageContainer.setBackgroundTintList(ColorStateList.valueOf(color));
-
-
         Drawable background = pageContainer.getBackground().mutate();
 
         if (background instanceof GradientDrawable) {
             GradientDrawable drawable = (GradientDrawable) background;
-            drawable.setColor(color); // Fond
-
+            drawable.setColor(color);
         }
-
-
-
     }
 
     public Page getPage() {
         return pageData;
     }
-
 }
-

@@ -1,4 +1,4 @@
-package com.example.noteapp;
+package com.example.noteapp.ui.create;
 
 import android.app.Dialog;
 import android.content.res.ColorStateList;
@@ -15,21 +15,17 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.noteapp.R;
+import com.example.noteapp.data.PageStorage;
+import com.example.noteapp.model.Page;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
-import java.io.File;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class CreatePageDialogFragment extends DialogFragment {
@@ -37,15 +33,17 @@ public class CreatePageDialogFragment extends DialogFragment {
     public interface OnPageCreatedListener {
         void onPageCreated();
     }
-    private OnPageCreatedListener listener;
-    public CreatePageDialogFragment(OnPageCreatedListener listener) {
-        this.listener = listener;
-    }
+
+    private final OnPageCreatedListener listener;
     private EditText titleInput, editTextIcon;
     private CheckBox checkSecret;
     private ImageButton saveButton;
     private View btnClose, color1View, color2View, color3View, color4View, color5View, color6View, colorAddView;
     private ImageView checkOverlay1, checkOverlay2, checkOverlay3, checkOverlay4, checkOverlay5, checkOverlay6;
+
+    public CreatePageDialogFragment(OnPageCreatedListener listener) {
+        this.listener = listener;
+    }
 
     @Nullable
     @Override
@@ -59,7 +57,6 @@ public class CreatePageDialogFragment extends DialogFragment {
         saveButton = view.findViewById(R.id.saveButton);
         checkSecret = view.findViewById(R.id.checkSecret);
         btnClose = view.findViewById(R.id.btnClose);
-        checkSecret = view.findViewById(R.id.checkSecret);
         checkOverlay1 = view.findViewById(R.id.checkOverlay1);
         checkOverlay2 = view.findViewById(R.id.checkOverlay2);
         checkOverlay3 = view.findViewById(R.id.checkOverlay3);
@@ -75,110 +72,81 @@ public class CreatePageDialogFragment extends DialogFragment {
         colorAddView = view.findViewById(R.id.colorAddView);
 
         List<ImageView> checkOverlays = Arrays.asList(checkOverlay1, checkOverlay2, checkOverlay3, checkOverlay4, checkOverlay5, checkOverlay6);
-
         List<View> colorsChecked = Arrays.asList(color1View, color2View, color3View, color4View, color5View, color6View);
         AtomicReference<String> backgroundColor = new AtomicReference<>("#B0E1FA");
 
         for (int i = 0; i < colorsChecked.size(); i++) {
-            final int index = i; // capture correcte
+            final int index = i;
             View colorChecked = colorsChecked.get(i);
 
             colorChecked.setOnClickListener(v -> {
-                // Cacher tous les overlays
                 for (ImageView overlay : checkOverlays) {
                     overlay.setVisibility(View.INVISIBLE);
                 }
 
-                // Trouver le parent et la pastille de couleur
                 View colorView = colorsChecked.get(index);
 
                 if (colorView != null && colorView.getBackgroundTintList() != null) {
                     int color = colorView.getBackgroundTintList().getDefaultColor();
                     backgroundColor.set(String.format("#%06X", (0xFFFFFF & color)));
-                    // Convertir la chaîne en int couleur
                     int parsedColor = Color.parseColor(backgroundColor.get());
                     saveButton.setBackgroundTintList(ColorStateList.valueOf(parsedColor));
                 }
 
-                // Afficher uniquement l’overlay sélectionné
                 checkOverlays.get(index).setVisibility(View.VISIBLE);
             });
         }
 
+        saveButton.setOnClickListener(v -> createPage(backgroundColor.get()));
+        btnClose.setOnClickListener(v -> dismiss());
+        colorAddView.setOnClickListener(v -> showAddColorDialog());
 
-        saveButton.setOnClickListener(v -> {
-            String title = titleInput.getText().toString();
-            String icon = editTextIcon.getText().toString();
-            boolean isSecret = checkSecret.isChecked();
-
-            String json;
-            if(isSecret){
-                json = "pagesSecret.json";
-            } else {
-                json = "pages.json";
-            }
-
-            if (!title.isEmpty()) {
-                File file = new File(requireContext().getFilesDir(), json);
-                ObjectMapper om = new ObjectMapper();
-                List<Page> pages = new ArrayList<>();
-
-                // Lire les pages existantes
-                if (file.exists()) {
-                    try {
-                        pages = om.readValue(file, new TypeReference<List<Page>>() {});
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                // Ajouter nouvelle page
-                String id = UUID.randomUUID().toString();
-                System.out.println("à la creation : "+isSecret);
-                Page newPage = new Page(id, title, icon, backgroundColor.get(),isSecret);
-                pages.add(newPage);
-
-                try {
-                    om.writeValue(file, pages);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                if (listener != null) listener.onPageCreated();
-                dismiss(); // Fermer la popup
-            } else {
-                Toast.makeText(getContext(), "Le titre est requis", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        btnClose.setOnClickListener(v ->{
-            dismiss();
-        });
-
-        colorAddView.setOnClickListener(v -> {
-            AddColorDialogFragment dialog = new AddColorDialogFragment();
-
-            dialog.setOnModifyListener(newColorInput -> {
-                try {
-
-                    int color = Color.parseColor(newColorInput);
-                    color6View.setVisibility(View.VISIBLE);
-                    color6View.setBackgroundTintList(ColorStateList.valueOf(color));
-
-                    // ✅ Désactiver le clic (si plus modifiable après)
-                    colorAddView.setVisibility(View.GONE);
-                    colorAddView.setClickable(false);
-
-                } catch (IllegalArgumentException e) {
-                    Toast.makeText(requireContext(), "Couleur invalide", Toast.LENGTH_SHORT).show();
-                }
-            });
-
-            dialog.show(requireActivity().getSupportFragmentManager(), "AddNewColor");
-        });
         return view;
     }
 
+    private void createPage(String backgroundColor) {
+        String title = titleInput.getText().toString();
+        String icon = editTextIcon.getText().toString();
+        boolean isSecret = checkSecret.isChecked();
+
+        if (!title.isEmpty()) {
+            PageStorage pageStorage = new PageStorage(requireContext());
+            Page newPage = pageStorage.createPage(title, icon, backgroundColor, isSecret);
+            System.out.println("à la creation : " + isSecret);
+
+            try {
+                pageStorage.addPage(newPage);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            if (listener != null) {
+                listener.onPageCreated();
+            }
+            dismiss();
+        } else {
+            Toast.makeText(getContext(), "Le titre est requis", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void showAddColorDialog() {
+        AddColorDialogFragment dialog = new AddColorDialogFragment();
+
+        dialog.setOnModifyListener(newColorInput -> {
+            try {
+                int color = Color.parseColor(newColorInput);
+                color6View.setVisibility(View.VISIBLE);
+                color6View.setBackgroundTintList(ColorStateList.valueOf(color));
+
+                colorAddView.setVisibility(View.GONE);
+                colorAddView.setClickable(false);
+            } catch (IllegalArgumentException e) {
+                Toast.makeText(requireContext(), "Couleur invalide", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        dialog.show(requireActivity().getSupportFragmentManager(), "AddNewColor");
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -196,6 +164,4 @@ public class CreatePageDialogFragment extends DialogFragment {
             window.setGravity(Gravity.BOTTOM);
         }
     }
-
 }
-
