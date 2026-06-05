@@ -1,5 +1,7 @@
 package com.example.noteapp;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -21,7 +23,7 @@ public class Page implements Serializable {
     private String type;
     private String reminderDate;
     private String reminderTime;
-    public boolean isSecret;
+    private boolean isSecret;
 
 
     public Page(String id, String title, String content, String icon, String colorFont, String colorText, boolean isSecret){
@@ -70,8 +72,10 @@ public class Page implements Serializable {
     public String getType(){return normalizeType(type);}
     public String getReminderDate(){return reminderDate == null ? "" : reminderDate;}
     public String getReminderTime(){return reminderTime == null ? "" : reminderTime;}
+    public boolean getIsSecret(){return isSecret;}
 
 
+    public void setId(String id){this.id = id;}
     public void setTitle(String title){this.title = title;}
     public void setContent(String content){this.content = content;}
     public void setIcon(String icon){this.icon=icon;}
@@ -82,10 +86,14 @@ public class Page implements Serializable {
     public void setType(String type){this.type = normalizeType(type);}
     public void setReminderDate(String reminderDate){this.reminderDate = reminderDate == null ? "" : reminderDate.trim();}
     public void setReminderTime(String reminderTime){this.reminderTime = reminderTime == null ? "" : reminderTime.trim();}
+    public void setIsSecret(boolean isSecret){this.isSecret = isSecret;}
 
+    @JsonIgnore
     public boolean isReminder(){return TYPE_REMINDER.equals(getType());}
+    @JsonIgnore
     public boolean isList(){return TYPE_LIST.equals(getType());}
 
+    @JsonIgnore
     public String getTypeLabel() {
         switch (getType()) {
             case TYPE_REMINDER:
@@ -97,6 +105,7 @@ public class Page implements Serializable {
         }
     }
 
+    @JsonIgnore
     public String getReminderLabel() {
         if (!isReminder()) {
             return "";

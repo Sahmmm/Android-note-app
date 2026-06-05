@@ -44,13 +44,13 @@ public class PageRepository {
     }
 
     public void addPage(Page page) {
-        List<Page> pages = loadPages(page.isSecret);
+        List<Page> pages = loadPages(page.getIsSecret());
         pages.add(page);
-        savePages(page.isSecret, pages);
+        savePages(page.getIsSecret(), pages);
     }
 
     public void updatePage(Page page) {
-        List<Page> pages = loadPages(page.isSecret);
+        List<Page> pages = loadPages(page.getIsSecret());
         boolean updated = false;
         for (int i = 0; i < pages.size(); i++) {
             if (pages.get(i).getId().equals(page.getId())) {
@@ -62,22 +62,22 @@ public class PageRepository {
         if (!updated) {
             pages.add(page);
         }
-        savePages(page.isSecret, pages);
+        savePages(page.getIsSecret(), pages);
     }
 
     public void deletePage(Page page) {
-        List<Page> pages = loadPages(page.isSecret);
+        List<Page> pages = loadPages(page.getIsSecret());
         for (int i = 0; i < pages.size(); i++) {
             if (pages.get(i).getId().equals(page.getId())) {
                 pages.remove(i);
                 break;
             }
         }
-        savePages(page.isSecret, pages);
+        savePages(page.getIsSecret(), pages);
     }
 
     public Page findPageById(Page page) {
-        for (Page storedPage : loadPages(page.isSecret)) {
+        for (Page storedPage : loadPages(page.getIsSecret())) {
             if (storedPage.getId().equals(page.getId())) {
                 return storedPage;
             }
